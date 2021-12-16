@@ -7,24 +7,30 @@
 > Please visit [our discord](https://discord.gg/mTaHuK6BVa) for all updates and support!
 
 # Description
-SG-Generation is an addon for Stargate adds a network of naturally generating gates into the world. 
+SG-ExtraFlags is an addon for Stargate adds a number of additional flags to the plugin!<br>
+These flags were not included in the main plugin as they considerably alter SG's established syntax.
 
 #### Features:
-- [To be determined](https://github.com/orgs/stargate-bukkit/projects/1)
-  - A network of naturally generating gates
-
+- [To be determined](https://github.com/stargate-rewritten/SG-ExtraFlags/issues)
+  - The `L` flag, which generates a gate at the specified coordinates.
+  - The `C` flag, which will leave a portal open for a specified amount of time once activated.
+  - The `D` flag, which will destroy the portal after a certain period of time.
+  - The `W` flag, which will randomly teleport the user somewhere into the world.
+    - As an optional feature of the `W` flag, ruined portal structures will be used as the exit and will create a random network.
+  - The `V` flag, which will hide a portal's sign interface.
+  - The `E` flag, which will allow redstone to be used to activate the portal.
 ## Dependencies
 [The most recent version of Stargate](https://www.spigotmc.org/resources/stargate.87978/)
 
 # Permissions
 ### Nodes
 ```
-stargate.sgeh.node -- to be added later (description)
-  stargate.sgeh.subnode -- not implemented yet (description)
+sg.extraflags.node -- to be added later (description)
+  sg.extraflags.node.subnode -- not implemented yet (description)
 ```
 ### Defaults
 ```
-stargate.sgeh.node -- op
+sg.extraflags.node -- op
 ```
 
 ## Instructions
