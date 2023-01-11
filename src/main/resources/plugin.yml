@@ -1,18 +1,19 @@
 name: StargateExtraFlags
-main: net.knarcraft.stargateextraflags.StargateExtraFlags
+main: org.stargate.stargatemechanics.StargateMechanics
 version: 0.0.1
 description: Command addon for the Stargate plugin for Bukkit
 author: [EpicKnarvik97, Thorinwasher]
 depend: [ Stargate ]
 api-version: 1.18
 commands:
-  stargateflag:
+  stargatemechanics:
     aliases:
-      - sgf
-    description: The root command for sgef
+      - sgm
+      - sgmechanics
+    description: The root command for stargate mechanics
     usage: |
       /<command>
 permissions:
-  stargate.extraflags.info:
-    description: Allows the use of /sgf info
+  stargate.mechanics.info:
+    description: Allows the use of /sgm info
     default: op

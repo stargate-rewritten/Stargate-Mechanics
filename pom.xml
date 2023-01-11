@@ -2,8 +2,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.knarcraft</groupId>
-    <artifactId>StargateExtraFlags</artifactId>
+    <groupId>org.stargate</groupId>
+    <artifactId>stargatemechanics</artifactId>
     <version>0.0.1</version>
 
     <licenses>
@@ -39,9 +39,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.TheDgtl</groupId>
-            <artifactId>Stargate</artifactId>
-            <version>1.0.0.11-ALPHA</version>
+            <groupId>org.sgrewritten</groupId>
+            <artifactId>stargate</artifactId>
+            <version>1.0.0.13-ALPHA</version>
         </dependency>
     </dependencies>
 
