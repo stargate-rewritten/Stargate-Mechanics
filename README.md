@@ -10,10 +10,6 @@
 # Description
 StarGate-Mechanics is an official module that adds numerous additional mechanics and portal types to [the Stargate plugin](sgrewritten.org/bukkitsource).<br>
 
-It consists of two parts (each of which may be toggled on or off):
-**A Vanilla++ Mechanics System**
-- In addition to the Expands upon the plugin's sign-based system to add new Although these flags are reasonably immersive, these These flags were not included in the main plugin as they considerably alter SG's established syntax.
-
 ## Features:
 This is a work in progress: many features are [still being determined](https://github.com/stargate-rewritten/Stargate-Mechanics/issues)
 
