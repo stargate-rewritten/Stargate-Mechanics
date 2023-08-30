@@ -1,5 +1,5 @@
-name: StargateExtraFlags
-main: org.stargate.stargatemechanics.StargateMechanics
+name: StargateMechanics
+main: org.sgrewritten.stargatemechanics.StargateMechanics
 version: 0.0.1
 description: Command addon for the Stargate plugin for Bukkit
 author: [EpicKnarvik97, Thorinwasher]
