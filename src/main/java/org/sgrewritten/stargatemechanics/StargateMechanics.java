@@ -26,6 +26,7 @@ public class StargateMechanics extends JavaPlugin {
     BlockEventListener blockEventListener;
     private StargateAPI stargateAPI;
     static StargateMechanics instance;
+    private PlayerEventListener playerEventListener;
 
     @Override
     public void onEnable() {
@@ -40,24 +41,15 @@ public class StargateMechanics extends JavaPlugin {
         pluginManager.registerEvents(new StargateEventListener(this, stargateAPI.getRegistry()), this);
         pluginManager.registerEvents(blockEventListener, this);
         pluginManager.registerEvents(new PluginEventListener(this), this);
-        pluginManager.registerEvents(new PlayerEventListener(stargateAPI, this),this);
+        this.playerEventListener = new PlayerEventListener(stargateAPI, this);
+        pluginManager.registerEvents(playerEventListener,this);
         this.stargateAPI.getMaterialHandlerResolver().addBlockHandlerInterface(new RedstoneFlagHandlerInterface(this));
-        removeSignsFromNoSignPortals();
-    }
-
-    private void removeSignsFromNoSignPortals() {
-        for(Network network : stargateAPI.getRegistry().getNetworkMap().values()){
-            for(Portal portal : network.getAllPortals()){
-                if(portal instanceof RealPortal realPortal){
-                    NoSignUtils.removeSignsFromPortal(realPortal);
-                }
-            }
-        }
+        NoSignUtils.removeSignsFromNoSignPortals(stargateAPI.getRegistry());
     }
 
     @Override
     public void onDisable() {
-        
+        playerEventListener.onPluginDisable();
     }
 
     public void loadStargate() {

@@ -17,6 +17,7 @@ import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -125,5 +126,11 @@ public class PlayerEventListener implements Listener {
         state.setBlockData(signData);
         state.update(true);
         portal.updateState();
+    }
+
+    public void onPluginDisable(){
+        for(RealPortal portal : new ArrayList<>(removeSignMap.keySet())){
+            removeSignsFromPortal(portal);
+        }
     }
 }
