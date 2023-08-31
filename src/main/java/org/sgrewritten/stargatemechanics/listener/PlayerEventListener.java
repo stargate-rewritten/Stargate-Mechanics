@@ -59,8 +59,8 @@ public class PlayerEventListener implements Listener {
             long timePoint = System.currentTimeMillis();
             removeSignMap.put(portal,timePoint);
             Bukkit.getScheduler().runTaskLater(plugin,() -> {
-                long latestTimePoint = removeSignMap.get(portal);
-                if(latestTimePoint == timePoint){
+                Long latestTimePoint = removeSignMap.get(portal);
+                if(latestTimePoint != null && latestTimePoint == timePoint){
                     removeSignsFromPortal(portal);
                 }
                 }, 20*DESTROY_SIGN_DELAY
@@ -86,7 +86,6 @@ public class PlayerEventListener implements Listener {
 
     private void createSign(Player player, RealPortal portal, Location clickedBlockLocation) {
         if(!stargateAPI.getPermissionManager(player).hasAccessPermission(portal) || removeSignMap.containsKey(portal)){
-            StargateMechanics.log(Level.INFO, "ping 1");
             return;
         }
 
