@@ -40,18 +40,14 @@ public class PlayerEventListener implements Listener {
         if(clickedBlock == null){
             return;
         }
+        if(event.getAction().isRightClick()){
+            Location location = clickedBlock.getLocation();
+            RealPortal portal = stargateAPI.getRegistry().getPortal(location, GateStructureType.FRAME);
+            if(portal != null && portal.hasFlag(PortalFlag.NO_SIGN)) {
+                createSign(event.getPlayer(), portal, location);
+            }
+        }
         dealWithGeneralInteraction(event.getPlayer(),clickedBlock.getLocation());
-        if(!event.getAction().isRightClick()){
-            return;
-        }
-        Location location = clickedBlock.getLocation();
-        RealPortal portal = stargateAPI.getRegistry().getPortal(location, GateStructureType.FRAME);
-        if(portal == null){
-            return;
-        }
-        if(portal.hasFlag(PortalFlag.NO_SIGN)){
-            createSign(event.getPlayer(), portal);
-        }
     }
 
     private void dealWithGeneralInteraction(Player player, Location location) {
@@ -85,13 +81,18 @@ public class PlayerEventListener implements Listener {
                 previousState.update(true);
             }
         }
+        removeSignMap.remove(portal);
     }
 
-    private void createSign(Player player, RealPortal portal) {
-        if(!stargateAPI.getPermissionManager(player).hasAccessPermission(portal)){
+    private void createSign(Player player, RealPortal portal, Location clickedBlockLocation) {
+        if(!stargateAPI.getPermissionManager(player).hasAccessPermission(portal) || removeSignMap.containsKey(portal)){
+            StargateMechanics.log(Level.INFO, "ping 1");
             return;
         }
 
+        double closestBlockFromClickedBlockDistance = -1;
+        Location closestLocation = null;
+        BlockVector closestRelativeLocation = null;
         GateAPI gate = portal.getGate();
         for(BlockVector controlBlock : gate.getFormat().getControlBlocks()){
             Location location = gate.getLocation(controlBlock);
@@ -99,21 +100,31 @@ public class PlayerEventListener implements Listener {
             if(portalPosition != null){
                 continue;
             }
-            // Tell Stargate the block belongs to Stargate, so that it can use the default behaviors
-            PortalPosition portalPositionToRegister = new PortalPosition(PositionType.SIGN, controlBlock,"Stargate");
-            StargateMechanics.log(Level.INFO, "Adding portal position of type" + portalPositionToRegister.getPositionType());
-            stargateAPI.getRegistry().registerPortalPosition(portalPositionToRegister,location,portal);
-            BlockState state = location.getBlock().getState();
-            previousData.put(new BlockLocation(location),location.getBlock().getState());
-            // TODO currently hardcoded material for the sign, might wanna add something to this later on
-            state.setType(Material.OAK_WALL_SIGN);
-            WallSign signData = (WallSign) state.getBlockData();
-            signData.setFacing(gate.getFacing());
-            state.setBlockData(signData);
-            state.update(true);
-            portal.updateState();
-            // Only one sign should be applied
+            double clickedBlockDistance = location.distance(clickedBlockLocation);
+            if(closestBlockFromClickedBlockDistance == -1 || closestBlockFromClickedBlockDistance > clickedBlockDistance){
+                closestBlockFromClickedBlockDistance = clickedBlockDistance;
+                closestLocation = location;
+                closestRelativeLocation = controlBlock;
+            }
+        }
+        if(closestLocation == null || closestRelativeLocation == null){
+            // TODO: Temp
+            player.sendRawMessage("Could not find a control block");
             return;
         }
+
+        // Tell Stargate the block belongs to Stargate, so that it can use the default behaviors
+        PortalPosition portalPositionToRegister = new PortalPosition(PositionType.SIGN, closestRelativeLocation,"Stargate");
+        StargateMechanics.log(Level.INFO, "Adding portal position of type" + portalPositionToRegister.getPositionType());
+        stargateAPI.getRegistry().registerPortalPosition(portalPositionToRegister,closestLocation,portal);
+        BlockState state = closestLocation.getBlock().getState();
+        previousData.put(new BlockLocation(closestLocation),closestLocation.getBlock().getState());
+        // TODO currently hardcoded material for the sign, might wanna add something to this later on
+        state.setType(Material.OAK_WALL_SIGN);
+        WallSign signData = (WallSign) state.getBlockData();
+        signData.setFacing(gate.getFacing());
+        state.setBlockData(signData);
+        state.update(true);
+        portal.updateState();
     }
 }
