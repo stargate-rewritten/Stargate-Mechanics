@@ -107,7 +107,7 @@ public class PlayerEventListener implements Listener {
                 closestRelativeLocation = controlBlock;
             }
         }
-        if(closestLocation == null || closestRelativeLocation == null){
+        if(closestLocation == null){
             // TODO: Temp
             player.sendRawMessage("Could not find a control block");
             return;
@@ -119,12 +119,13 @@ public class PlayerEventListener implements Listener {
         stargateAPI.getRegistry().registerPortalPosition(portalPositionToRegister,closestLocation,portal);
         BlockState state = closestLocation.getBlock().getState();
         previousData.put(new BlockLocation(closestLocation),closestLocation.getBlock().getState());
-        // TODO currently hardcoded material for the sign, might wanna add something to this later on
+        // TODO: currently hardcoded material for the sign, might wanna add something to this later on
         state.setType(Material.OAK_WALL_SIGN);
         WallSign signData = (WallSign) state.getBlockData();
         signData.setFacing(gate.getFacing());
         state.setBlockData(signData);
         state.update(true);
+        portal.activate();
         portal.updateState();
     }
 
