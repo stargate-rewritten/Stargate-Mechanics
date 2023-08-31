@@ -125,7 +125,7 @@ public class PlayerEventListener implements Listener {
         signData.setFacing(gate.getFacing());
         state.setBlockData(signData);
         state.update(true);
-        portal.activate();
+        portal.activate(player);
         portal.updateState();
     }
 
