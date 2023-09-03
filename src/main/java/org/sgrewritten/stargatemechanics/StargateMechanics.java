@@ -5,14 +5,11 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.api.StargateAPI;
-import org.sgrewritten.stargate.api.network.Network;
-import org.sgrewritten.stargate.api.network.portal.Portal;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargatemechanics.listener.PlayerEventListener;
 import org.sgrewritten.stargatemechanics.listener.StargateEventListener;
 import org.sgrewritten.stargatemechanics.listener.BlockEventListener;
 import org.sgrewritten.stargatemechanics.listener.PluginEventListener;
-import org.sgrewritten.stargatemechanics.blockhandlerinterface.RedstoneFlagHandlerInterface;
+import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
 import org.sgrewritten.stargatemechanics.utils.NoSignUtils;
 
 import java.util.logging.Level;
@@ -36,15 +33,21 @@ public class StargateMechanics extends JavaPlugin {
 
     private void load() {
         loadStargate();
+        registerCustomFlags();
         PluginManager pluginManager = getServer().getPluginManager();
-        blockEventListener = new BlockEventListener(stargateAPI.getRegistry());
+        blockEventListener = new BlockEventListener(stargateAPI.getRegistry(),this);
         pluginManager.registerEvents(new StargateEventListener(this, stargateAPI.getRegistry()), this);
         pluginManager.registerEvents(blockEventListener, this);
         pluginManager.registerEvents(new PluginEventListener(this), this);
         this.playerEventListener = new PlayerEventListener(stargateAPI, this);
         pluginManager.registerEvents(playerEventListener,this);
-        this.stargateAPI.getMaterialHandlerResolver().addBlockHandlerInterface(new RedstoneFlagHandlerInterface(this));
         NoSignUtils.removeSignsFromNoSignPortals(stargateAPI.getRegistry());
+    }
+
+    private void registerCustomFlags() {
+        for(MechanicsFlag flag : MechanicsFlag.values()){
+            stargateAPI.getMaterialHandlerResolver().registerCustomFlag(flag.getCharacterRepresentation());
+        }
     }
 
     @Override
