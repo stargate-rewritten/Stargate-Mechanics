@@ -1,34 +1,28 @@
 package org.sgrewritten.stargatemechanics.listener;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.api.network.portal.PortalPosition;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
-import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
-import org.sgrewritten.stargatemechanics.flags.RedstoneFlagHandler;
-import org.sgrewritten.stargatemechanics.metadata.MetaDataProperty;
-import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
-
-import java.util.logging.Level;
+import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
+import org.sgrewritten.stargatemechanics.redstone.RedstoneFlagHandler;
 
 public class BlockEventListener implements Listener{
     private final RegistryAPI registry;
     private final StargateMechanics plugin;
+    private final RedstoneEngine engine;
 
-    public BlockEventListener(RegistryAPI registry, StargateMechanics plugin){
+    public BlockEventListener(RegistryAPI registry, StargateMechanics plugin, RedstoneEngine engine){
         this.registry = registry;
         this.plugin = plugin;
+        this.engine = engine;
     }
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockRedstone(BlockRedstoneEvent event) {
-        Bukkit.getScheduler().runTask(plugin,new RedstoneFlagHandler(event,registry,plugin));
+        engine.handleSignal(event.getBlock(), event.getOldCurrent(), event.getNewCurrent());
     }
+
 }
