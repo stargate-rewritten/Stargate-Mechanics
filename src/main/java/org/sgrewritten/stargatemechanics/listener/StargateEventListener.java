@@ -9,7 +9,7 @@ import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.event.StargateCreateEvent;
+import org.sgrewritten.stargate.api.event.StargateCreateEvent;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.utils.NoSignUtils;
