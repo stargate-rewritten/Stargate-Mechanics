@@ -31,19 +31,16 @@ public class OrRedstoneEngine implements RedstoneEngine{
     public void handleSignal(Block block, int oldCurrent, int newCurrent) {
         // Filter away any changes in current that only modifies the signal strength
         if((newCurrent == 0) == (oldCurrent == 0)){
-            StargateMechanics.log(Level.INFO, "Ping 1");
             return;
         }
         if(newCurrent == 0){
             Set<RealPortal> portals = getPortalsFromPosition(new BlockLocation(block.getLocation()));
             if(portals == null || portals.isEmpty()){
-                StargateMechanics.log(Level.INFO, "Ping 2");
                 return;
             }
             this.stopTrackingPosition(block.getLocation());
             for(RealPortal portal : portals){
                 if(!this.isRedstoneActive(portal)){
-                    StargateMechanics.log(Level.INFO, "Ping 3");
                     portal.close(true);
                 }
             }
@@ -61,7 +58,6 @@ public class OrRedstoneEngine implements RedstoneEngine{
     }
 
     private void handleRedstoneWire(Block block) {
-        StargateMechanics.log(Level.INFO, "Ping 4");
         Set<BlockLocation> effectedBlocks = RedstoneWireUtils.getEffectedBlocksFromRedstoneWire(block);
         for(BlockLocation effectedBlock : effectedBlocks){
             if(!effectedBlock.getLocation().getBlock().getType().isSolid()){
@@ -69,7 +65,6 @@ public class OrRedstoneEngine implements RedstoneEngine{
             }
             RealPortal portal = registry.getPortal(effectedBlock, GateStructureType.FRAME);
             if(portal != null){
-                StargateMechanics.log(Level.INFO, "Ping 5");
                 trackPosition(new BlockLocation(block.getLocation()),portal);
                 portal.open(null);
             }
