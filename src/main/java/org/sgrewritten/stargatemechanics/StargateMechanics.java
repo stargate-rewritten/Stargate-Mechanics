@@ -13,6 +13,7 @@ import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
 import org.sgrewritten.stargatemechanics.redstone.OrRedstoneEngine;
 import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
 import org.sgrewritten.stargatemechanics.utils.NoSignUtils;
+import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
 
 import java.util.logging.Level;
 
@@ -39,8 +40,9 @@ public class StargateMechanics extends JavaPlugin {
         registerCustomFlags();
         PluginManager pluginManager = getServer().getPluginManager();
         this.engine = new OrRedstoneEngine(stargateAPI.getRegistry());
+        RedstoneUtils.loadPortals(stargateAPI.getRegistry(),engine);
         blockEventListener = new BlockEventListener(stargateAPI.getRegistry(),this, engine);
-        pluginManager.registerEvents(new StargateEventListener(this, stargateAPI.getRegistry()), this);
+        pluginManager.registerEvents(new StargateEventListener(this, stargateAPI.getRegistry(),engine), this);
         pluginManager.registerEvents(blockEventListener, this);
         pluginManager.registerEvents(new PluginEventListener(this), this);
         this.playerEventListener = new PlayerEventListener(stargateAPI, this);

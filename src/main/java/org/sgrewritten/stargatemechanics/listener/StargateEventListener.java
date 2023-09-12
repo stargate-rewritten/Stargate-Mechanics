@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.sgrewritten.stargate.api.event.portal.StargateClosePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.gate.GateAPI;
@@ -42,6 +43,14 @@ public class StargateEventListener implements Listener{
         }
         if(event.getPortal().hasFlag(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation())){
             RedstoneUtils.loadPortal(realPortal, engine);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onStargateClosePortalEvent(StargateClosePortalEvent event){
+        if(event.getPortal().hasFlag(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation()) &&
+                !event.getForce()){
+            event.setCancelled(true);
         }
     }
 }

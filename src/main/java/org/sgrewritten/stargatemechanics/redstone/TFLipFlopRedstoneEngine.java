@@ -2,6 +2,8 @@ package org.sgrewritten.stargatemechanics.redstone;
 
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
+import org.sgrewritten.stargate.api.network.portal.BlockLocation;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
 import java.util.List;
 
@@ -15,6 +17,16 @@ public class TFLipFlopRedstoneEngine implements RedstoneEngine{
     }
     @Override
     public void handleSignal(Block block, int oldCurrent, int newCurrent) {
+
+    }
+
+    @Override
+    public void trackPosition(BlockLocation blockLocation, RealPortal portal) {
+
+    }
+
+    @Override
+    public void updatePortalState(RealPortal portal) {
 
     }
 

@@ -71,11 +71,26 @@ public class OrRedstoneEngine implements RedstoneEngine{
         }
     }
 
-    private void trackPosition(BlockLocation blockLocation, RealPortal portal) {
+    @Override
+    public void trackPosition(BlockLocation blockLocation, RealPortal portal) {
+        StargateMechanics.log(Level.INFO, String.format("Tracking position %s for portal %s:%s", blockLocation,portal.getNetwork().getName(),portal.getName()));
         relevantPositionsMap.putIfAbsent(blockLocation, new HashSet<>());
         relevantPositionsMap.get(blockLocation).add(portal);
         activeSignalsMap.putIfAbsent(portal, new HashSet<>());
         activeSignalsMap.get(portal).add(blockLocation);
+    }
+
+    @Override
+    public void updatePortalState(RealPortal portal){
+        if(isRedstoneActive(portal)){
+            if(!portal.isOpen()){
+                portal.open(null);
+            }
+        } else {
+            if(portal.isOpen()) {
+                portal.close(true);
+            }
+        }
     }
 
     private boolean isRedstoneActive(RealPortal portal) {
@@ -102,11 +117,18 @@ public class OrRedstoneEngine implements RedstoneEngine{
     private void handleBlockChange(Block block){
         for(BlockVector adjacent : VectorUtils.getAdjacentVectors()){
             Location adjacentLocation = block.getLocation().clone().add(adjacent);
-            if(relevantPositionsMap.get(new BlockLocation(adjacentLocation)) != null){
+            Set<RealPortal> portals = relevantPositionsMap.get(new BlockLocation(adjacentLocation));
+            if(portals != null && !portals.isEmpty()){
                 stopTrackingPosition(adjacentLocation);
                 trackPositionsCheck(adjacentLocation.getBlock());
+                for(RealPortal portal : portals){
+                    if(this.isRedstoneActive(portal)){
+                        portal.close(true);
+                    }
+                }
             }
         }
+
     }
 
     @Override
