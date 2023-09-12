@@ -1,25 +1,18 @@
 package org.sgrewritten.stargatemechanics.listener;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.sgrewritten.stargate.api.event.portal.StargateClosePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
-import org.sgrewritten.stargate.api.network.portal.PositionType;
-import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
-import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
 import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
-import org.sgrewritten.stargatemechanics.utils.NoSignUtils;
+import org.sgrewritten.stargatemechanics.utils.ButtonUtils;
+import org.sgrewritten.stargatemechanics.utils.SignUtils;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class StargateEventListener implements Listener{
 
@@ -39,9 +32,10 @@ public class StargateEventListener implements Listener{
             return;
         }
         if(event.getPortal().hasFlag(PortalFlag.NO_SIGN)) {
-            NoSignUtils.removeSignsFromPortal(realPortal);
+            SignUtils.removeSignsFromPortal(realPortal);
         }
         if(event.getPortal().hasFlag(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation())){
+            ButtonUtils.removeButtonsFromPortal(realPortal);
             RedstoneUtils.loadPortal(realPortal, engine);
         }
     }

@@ -1,17 +1,13 @@
 package org.sgrewritten.stargatemechanics.redstone;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
-import org.bukkit.block.data.FaceAttachable;
-import org.bukkit.block.data.type.Observer;
-import org.bukkit.block.data.type.Repeater;
 import org.bukkit.block.data.type.Switch;
-import org.bukkit.util.BlockVector;
-import org.bukkit.util.Vector;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
@@ -58,15 +54,19 @@ public class OrRedstoneEngine implements RedstoneEngine{
     }
 
     private void trackPositionsCheck(Block block) {
+        StargateMechanics.log(Level.INFO, block.getType().name());
+
         if(Tag.BUTTONS.isTagged(block.getType())){
             handleSwitch(block);
+            return;
         }
 
         switch (block.getType()){
             case REDSTONE_WIRE -> handleRedstoneWire(block);
             case REPEATER, OBSERVER, COMPARATOR -> handleDirectional(block);
             case LEVER -> handleSwitch(block);
-            case REDSTONE_TORCH, REDSTONE_WALL_TORCH -> checkRelativePosition(block,BlockFace.UP);
+            case REDSTONE_TORCH, REDSTONE_WALL_TORCH, TRIPWIRE_HOOK -> checkRelativePosition(block,BlockFace.UP);
+            case TRAPPED_CHEST, LECTERN -> checkRelativePosition(block, BlockFace.DOWN);
             default -> {}
         }
 
@@ -124,6 +124,16 @@ public class OrRedstoneEngine implements RedstoneEngine{
     }
 
     @Override
+    public void stopPositionTracking(Location location) {
+        Set<RealPortal> portals = stopTrackingPosition(location);
+        for(RealPortal portal : portals){
+            if(!isRedstoneActive(portal)){
+                portal.close(true);
+            }
+        }
+    }
+
+    @Override
     public void updatePortalState(RealPortal portal){
         if(isRedstoneActive(portal)){
             if(!portal.isOpen()){
@@ -140,33 +150,34 @@ public class OrRedstoneEngine implements RedstoneEngine{
         return !activeSignalsMap.get(portal).isEmpty();
     }
 
-    private void stopTrackingPosition(Location location) {
+    public Set<RealPortal> stopTrackingPosition(Location location) {
         BlockLocation blockLocation = new BlockLocation(location);
         Set<RealPortal> portals = relevantPositionsMap.remove(blockLocation);
+        if(portals == null){
+            return new HashSet<>();
+        }
         for(RealPortal portal : portals){
             activeSignalsMap.get(portal).remove(blockLocation);
         }
+        return  portals;
     }
 
     private Set<RealPortal> getPortalsFromPosition(BlockLocation blockLocation) {
         return relevantPositionsMap.get(blockLocation);
     }
 
-    @Override
-    public void handleBlockPlace(Block block) {
-        handleBlockChange(block);
-    }
-
     private void handleBlockChange(Block block){
-        for(BlockVector adjacent : VectorUtils.getAdjacentVectors()){
-            Location adjacentLocation = block.getLocation().clone().add(adjacent);
-            Set<RealPortal> portals = relevantPositionsMap.get(new BlockLocation(adjacentLocation));
+        for(BlockFace adjacent : VectorUtils.getNearBlockFaces()){
+            Block adjacentBlock = block.getRelative(adjacent);
+            Set<RealPortal> portals = relevantPositionsMap.get(new BlockLocation(adjacentBlock.getLocation()));
             if(portals != null && !portals.isEmpty()){
-                stopTrackingPosition(adjacentLocation);
-                trackPositionsCheck(adjacentLocation.getBlock());
+                stopTrackingPosition(adjacentBlock.getLocation());
+                trackPositionsCheck(adjacentBlock);
                 for(RealPortal portal : portals){
-                    if(this.isRedstoneActive(portal)){
+                    if(!this.isRedstoneActive(portal)){
                         portal.close(true);
+                    } else {
+                        portal.open(null);
                     }
                 }
             }
@@ -175,12 +186,33 @@ public class OrRedstoneEngine implements RedstoneEngine{
     }
 
     @Override
-    public void handleBlockBreak(Block block) {
-        handleBlockChange(block);
+    public void onBlockChange(Block block){
+        if(block.getType() != Material.REDSTONE_WIRE || block.getBlockPower() == 0){
+            return;
+        }
+
+        Set<RealPortal> portals = stopTrackingPosition(block.getLocation());
+        trackPositionsCheck(block);
+        for(RealPortal portal : portals){
+            if(!isRedstoneActive(portal)){
+                portal.close(true);
+            }
+        }
     }
 
     @Override
-    public void handleMultiBlockMove(List<Block> blocks, Vector moveDirection) {
+    public void onBlockPlace(Block block){
+        if( !(block.getType() == Material.REDSTONE_TORCH || block.getType() == Material.REDSTONE_WALL_TORCH)){
+            return;
+        }
 
+
+        Set<RealPortal> portals = stopTrackingPosition(block.getLocation());
+        trackPositionsCheck(block);
+        for(RealPortal portal : portals){
+            if(!isRedstoneActive(portal)){
+                portal.close(true);
+            }
+        }
     }
 }

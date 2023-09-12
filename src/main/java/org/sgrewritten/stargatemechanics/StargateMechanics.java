@@ -12,7 +12,8 @@ import org.sgrewritten.stargatemechanics.listener.PluginEventListener;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
 import org.sgrewritten.stargatemechanics.redstone.OrRedstoneEngine;
 import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
-import org.sgrewritten.stargatemechanics.utils.NoSignUtils;
+import org.sgrewritten.stargatemechanics.utils.ButtonUtils;
+import org.sgrewritten.stargatemechanics.utils.SignUtils;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
 
 import java.util.logging.Level;
@@ -47,7 +48,8 @@ public class StargateMechanics extends JavaPlugin {
         pluginManager.registerEvents(new PluginEventListener(this), this);
         this.playerEventListener = new PlayerEventListener(stargateAPI, this);
         pluginManager.registerEvents(playerEventListener,this);
-        NoSignUtils.removeSignsFromNoSignPortals(stargateAPI.getRegistry());
+        SignUtils.removeSignsFromNoSignPortals(stargateAPI.getRegistry());
+        ButtonUtils.removeButtonsFromAllPortalsWithFlag(stargateAPI.getRegistry(), MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation());
     }
 
     private void registerCustomFlags() {

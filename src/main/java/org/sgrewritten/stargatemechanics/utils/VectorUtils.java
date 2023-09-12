@@ -20,4 +20,8 @@ public class VectorUtils {
     public static List<BlockFace> getAdjacentBlockFaces() {
         return List.of(BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST);
     }
+
+    public static List<BlockFace> getNearBlockFaces(){
+        return List.of(BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.SELF);
+    }
 }

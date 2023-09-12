@@ -1,14 +1,13 @@
 package org.sgrewritten.stargatemechanics.listener;
 
-import org.bukkit.Bukkit;
+import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.event.block.*;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
-import org.sgrewritten.stargatemechanics.redstone.RedstoneFlagHandler;
 
 public class BlockEventListener implements Listener{
     private final RegistryAPI registry;
@@ -25,4 +24,23 @@ public class BlockEventListener implements Listener{
         engine.handleSignal(event.getBlock(), event.getOldCurrent(), event.getNewCurrent());
     }
 
+    @EventHandler
+    public void onBlockPhysics(BlockPhysicsEvent event){
+        engine.onBlockChange(event.getBlock());
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPhysicsEvent event){
+        engine.onBlockPlace(event.getBlock());
+    }
+
+    @EventHandler
+    public void onBlockDestroy(BlockDestroyEvent event){
+        engine.stopPositionTracking(event.getBlock().getLocation());
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event){
+        engine.stopPositionTracking(event.getBlock().getLocation());
+    }
 }

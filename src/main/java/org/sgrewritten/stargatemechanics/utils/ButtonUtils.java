@@ -10,12 +10,12 @@ import org.sgrewritten.stargate.api.network.portal.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NoSignUtils {
-    public static void removeSignsFromPortal(RealPortal portal) {
+public class ButtonUtils {
+    public static void removeButtonsFromPortal(RealPortal realPortal) {
         List<PortalPosition> positionsToRemove = new ArrayList<>();
-        GateAPI gate = portal.getGate();
+        GateAPI gate = realPortal.getGate();
         for(PortalPosition portalPosition : gate.getPortalPositions()) {
-            if(portalPosition.getPluginName().equals("Stargate") && portalPosition.getPositionType() == PositionType.SIGN){
+            if(portalPosition.getPluginName().equals("Stargate") && portalPosition.getPositionType() == PositionType.BUTTON){
                 positionsToRemove.add(portalPosition);
             }
         }
@@ -26,11 +26,11 @@ public class NoSignUtils {
         }
     }
 
-    public static void removeSignsFromNoSignPortals(RegistryAPI registry) {
+    public static void removeButtonsFromAllPortalsWithFlag(RegistryAPI registry, Character flag){
         for(Network network : registry.getNetworkMap().values()){
             for(Portal portal : network.getAllPortals()){
-                if(portal instanceof RealPortal realPortal && portal.hasFlag(PortalFlag.NO_SIGN)){
-                    NoSignUtils.removeSignsFromPortal(realPortal);
+                if(portal instanceof RealPortal realPortal && portal.hasFlag(flag)){
+                    ButtonUtils.removeButtonsFromPortal(realPortal);
                 }
             }
         }
