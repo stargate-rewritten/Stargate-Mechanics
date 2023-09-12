@@ -16,6 +16,7 @@ import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
+import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,11 +31,14 @@ public class PlayerEventListener implements Listener {
     private final StargateMechanics plugin;
 
     private final static int DESTROY_SIGN_DELAY = 30; // seconds
+    private final ColoringOverrideRegistry registry;
 
-    public PlayerEventListener(StargateAPI stargateAPI, StargateMechanics plugin){
+    public PlayerEventListener(StargateAPI stargateAPI, ColoringOverrideRegistry registry, StargateMechanics plugin){
         this.stargateAPI = stargateAPI;
         this.plugin = plugin;
+        this.registry = registry;
     }
+
     @EventHandler(ignoreCancelled = true)
     void onPlayerInteractEvent(PlayerInteractEvent event){
         Block clickedBlock = event.getClickedBlock();

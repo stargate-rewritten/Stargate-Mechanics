@@ -12,6 +12,7 @@ import org.sgrewritten.stargatemechanics.listener.PluginEventListener;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
 import org.sgrewritten.stargatemechanics.redstone.OrRedstoneEngine;
 import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
+import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideRegistry;
 import org.sgrewritten.stargatemechanics.utils.ButtonUtils;
 import org.sgrewritten.stargatemechanics.utils.SignUtils;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
@@ -29,6 +30,7 @@ public class StargateMechanics extends JavaPlugin {
     static StargateMechanics instance;
     private PlayerEventListener playerEventListener;
     private RedstoneEngine engine;
+    private ColoringOverrideRegistry colorRegistry;
 
     @Override
     public void onEnable() {
@@ -42,14 +44,19 @@ public class StargateMechanics extends JavaPlugin {
         PluginManager pluginManager = getServer().getPluginManager();
         this.engine = new OrRedstoneEngine(stargateAPI.getRegistry());
         RedstoneUtils.loadPortals(stargateAPI.getRegistry(),engine);
+        this.colorRegistry = new ColoringOverrideRegistry();
+
         blockEventListener = new BlockEventListener(stargateAPI.getRegistry(),this, engine);
-        pluginManager.registerEvents(new StargateEventListener(this, stargateAPI.getRegistry(),engine), this);
+        pluginManager.registerEvents(new StargateEventListener(this, stargateAPI.getRegistry(),engine, colorRegistry), this);
         pluginManager.registerEvents(blockEventListener, this);
         pluginManager.registerEvents(new PluginEventListener(this), this);
-        this.playerEventListener = new PlayerEventListener(stargateAPI, this);
+        this.playerEventListener = new PlayerEventListener(stargateAPI,colorRegistry, this);
         pluginManager.registerEvents(playerEventListener,this);
+
         SignUtils.removeSignsFromNoSignPortals(stargateAPI.getRegistry());
         ButtonUtils.removeButtonsFromAllPortalsWithFlag(stargateAPI.getRegistry(), MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation());
+
+
     }
 
     private void registerCustomFlags() {
