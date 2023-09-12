@@ -2,6 +2,8 @@ package org.sgrewritten.stargatemechanics.redstone;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Repeater;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
@@ -52,9 +54,25 @@ public class OrRedstoneEngine implements RedstoneEngine{
     private void trackPositionsCheck(Block block) {
         switch (block.getType()){
             case REDSTONE_WIRE -> handleRedstoneWire(block);
+            case REPEATER -> handleRepeater(block);
             default -> {}
         }
 
+    }
+
+    private void handleRepeater(Block block) {
+        BlockData blockData = block.getBlockData();
+        if(!(blockData instanceof Repeater repeater)){
+            StargateMechanics.log(Level.WARNING, "Block with material of type Repeater, were not an instance of an repeater" +
+                    " This is a bug in your minecraft server instance!");
+            return;
+        }
+        Block effectedBlock = block.getRelative(repeater.getFacing().getOppositeFace());
+        RealPortal portal = registry.getPortal(effectedBlock.getLocation(), GateStructureType.FRAME);
+        if(portal != null){
+            trackPosition(new BlockLocation(block.getLocation()),portal);
+            portal.open(null);
+        }
     }
 
     private void handleRedstoneWire(Block block) {
