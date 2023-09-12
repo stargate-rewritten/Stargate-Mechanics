@@ -12,6 +12,7 @@ import org.sgrewritten.stargatemechanics.listener.PluginEventListener;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
 import org.sgrewritten.stargatemechanics.redstone.OrRedstoneEngine;
 import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
+import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideLoader;
 import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideRegistry;
 import org.sgrewritten.stargatemechanics.utils.ButtonUtils;
 import org.sgrewritten.stargatemechanics.utils.SignUtils;
@@ -45,6 +46,7 @@ public class StargateMechanics extends JavaPlugin {
         this.engine = new OrRedstoneEngine(stargateAPI.getRegistry());
         RedstoneUtils.loadPortals(stargateAPI.getRegistry(),engine);
         this.colorRegistry = new ColoringOverrideRegistry();
+        new ColoringOverrideLoader().load(stargateAPI.getRegistry(), colorRegistry);
 
         blockEventListener = new BlockEventListener(stargateAPI.getRegistry(),this, engine);
         pluginManager.registerEvents(new StargateEventListener(this, stargateAPI.getRegistry(),engine, colorRegistry), this);

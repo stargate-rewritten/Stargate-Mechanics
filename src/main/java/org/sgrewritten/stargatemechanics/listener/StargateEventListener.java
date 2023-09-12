@@ -1,6 +1,7 @@
 package org.sgrewritten.stargatemechanics.listener;
 
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.sgrewritten.stargate.api.event.gate.StargateSignFormatGateEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateClosePortalEvent;
@@ -76,7 +77,7 @@ public class StargateEventListener implements Listener{
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onStargateSignFormatGateEvent(StargateSignFormatGateEvent event){
         ColorOverride colorOverride = coloringOverrideRegistry.getColorOverride(event.getSign().getLocation());
         for(SignLine line : event.getLines()) {
