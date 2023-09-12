@@ -1,12 +1,15 @@
 package org.sgrewritten.stargatemechanics.redstone;
 
 import org.bukkit.Location;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.FaceAttachable;
 import org.bukkit.block.data.type.Observer;
 import org.bukkit.block.data.type.Repeater;
+import org.bukkit.block.data.type.Switch;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
@@ -55,26 +58,46 @@ public class OrRedstoneEngine implements RedstoneEngine{
     }
 
     private void trackPositionsCheck(Block block) {
+        if(Tag.BUTTONS.isTagged(block.getType())){
+            handleSwitch(block);
+        }
+
         switch (block.getType()){
             case REDSTONE_WIRE -> handleRedstoneWire(block);
             case REPEATER, OBSERVER, COMPARATOR -> handleDirectional(block);
+            case LEVER -> handleSwitch(block);
             default -> {}
         }
 
     }
 
+    private void checkRelativePosition(Block block, BlockFace face){
+        Block effectedBlock = block.getRelative(face);
+        RealPortal portal = registry.getPortal(effectedBlock.getLocation(), GateStructureType.FRAME);
+        if(portal != null){
+            trackPosition(new BlockLocation(block.getLocation()),portal);
+            portal.open(null);
+        }
+    }
+    private void handleSwitch(Block block){
+        BlockData blockData = block.getBlockData();
+        if(!(blockData instanceof Switch switchData)){
+            StargateMechanics.log(Level.INFO,"ping 1");
+            return;
+        }
+        switch (switchData.getAttachedFace()){
+            case WALL -> handleDirectional(block);
+            case FLOOR -> checkRelativePosition(block,BlockFace.DOWN);
+            case CEILING -> checkRelativePosition(block,BlockFace.UP);
+        }
+    }
 
     private void handleDirectional(Block block){
         BlockData blockData = block.getBlockData();
         if(!(blockData instanceof Directional directional)){
             return;
         }
-        Block effectedBlock = block.getRelative(directional.getFacing().getOppositeFace());
-        RealPortal portal = registry.getPortal(effectedBlock.getLocation(), GateStructureType.FRAME);
-        if(portal != null){
-            trackPosition(new BlockLocation(block.getLocation()),portal);
-            portal.open(null);
-        }
+        checkRelativePosition(block,directional.getFacing().getOppositeFace());
     }
 
     private void handleRedstoneWire(Block block) {
