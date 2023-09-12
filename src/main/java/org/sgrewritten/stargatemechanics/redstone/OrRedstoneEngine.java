@@ -3,6 +3,9 @@ package org.sgrewritten.stargatemechanics.redstone;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.FaceAttachable;
+import org.bukkit.block.data.type.Observer;
 import org.bukkit.block.data.type.Repeater;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
@@ -54,20 +57,19 @@ public class OrRedstoneEngine implements RedstoneEngine{
     private void trackPositionsCheck(Block block) {
         switch (block.getType()){
             case REDSTONE_WIRE -> handleRedstoneWire(block);
-            case REPEATER -> handleRepeater(block);
+            case REPEATER, OBSERVER, COMPARATOR -> handleDirectional(block);
             default -> {}
         }
 
     }
 
-    private void handleRepeater(Block block) {
+
+    private void handleDirectional(Block block){
         BlockData blockData = block.getBlockData();
-        if(!(blockData instanceof Repeater repeater)){
-            StargateMechanics.log(Level.WARNING, "Block with material of type Repeater, were not an instance of an repeater" +
-                    " This is a bug in your minecraft server instance!");
+        if(!(blockData instanceof Directional directional)){
             return;
         }
-        Block effectedBlock = block.getRelative(repeater.getFacing().getOppositeFace());
+        Block effectedBlock = block.getRelative(directional.getFacing().getOppositeFace());
         RealPortal portal = registry.getPortal(effectedBlock.getLocation(), GateStructureType.FRAME);
         if(portal != null){
             trackPosition(new BlockLocation(block.getLocation()),portal);
@@ -91,7 +93,6 @@ public class OrRedstoneEngine implements RedstoneEngine{
 
     @Override
     public void trackPosition(BlockLocation blockLocation, RealPortal portal) {
-        StargateMechanics.log(Level.INFO, String.format("Tracking position %s for portal %s:%s", blockLocation,portal.getNetwork().getName(),portal.getName()));
         relevantPositionsMap.putIfAbsent(blockLocation, new HashSet<>());
         relevantPositionsMap.get(blockLocation).add(portal);
         activeSignalsMap.putIfAbsent(portal, new HashSet<>());
