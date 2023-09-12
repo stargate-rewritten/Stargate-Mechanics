@@ -53,9 +53,11 @@ public class OrRedstoneEngine implements RedstoneEngine{
         }
     }
 
+    /**
+     * Check if the powered block is a redstone block, and whether it can interact with any portal
+     * @param block <p>The powered block</p>
+     */
     private void trackPositionsCheck(Block block) {
-        StargateMechanics.log(Level.INFO, block.getType().name());
-
         if(Tag.BUTTONS.isTagged(block.getType())){
             handleSwitch(block);
             return;
@@ -83,7 +85,6 @@ public class OrRedstoneEngine implements RedstoneEngine{
     private void handleSwitch(Block block){
         BlockData blockData = block.getBlockData();
         if(!(blockData instanceof Switch switchData)){
-            StargateMechanics.log(Level.INFO,"ping 1");
             return;
         }
         switch (switchData.getAttachedFace()){
@@ -146,11 +147,21 @@ public class OrRedstoneEngine implements RedstoneEngine{
         }
     }
 
+    /**
+     *
+     * @param portal
+     * @return <p>Whether the current portal is currently activated by redstone</p>
+     */
     private boolean isRedstoneActive(RealPortal portal) {
         return !activeSignalsMap.get(portal).isEmpty();
     }
 
-    public Set<RealPortal> stopTrackingPosition(Location location) {
+    /**
+     * Redstone deactivated at the current location? Use this code to register that
+     * @param location
+     * @return <p>All portals that were unregistered from specified location</p>
+     */
+    private Set<RealPortal> stopTrackingPosition(Location location) {
         BlockLocation blockLocation = new BlockLocation(location);
         Set<RealPortal> portals = relevantPositionsMap.remove(blockLocation);
         if(portals == null){
@@ -162,27 +173,9 @@ public class OrRedstoneEngine implements RedstoneEngine{
         return  portals;
     }
 
+
     private Set<RealPortal> getPortalsFromPosition(BlockLocation blockLocation) {
         return relevantPositionsMap.get(blockLocation);
-    }
-
-    private void handleBlockChange(Block block){
-        for(BlockFace adjacent : VectorUtils.getNearBlockFaces()){
-            Block adjacentBlock = block.getRelative(adjacent);
-            Set<RealPortal> portals = relevantPositionsMap.get(new BlockLocation(adjacentBlock.getLocation()));
-            if(portals != null && !portals.isEmpty()){
-                stopTrackingPosition(adjacentBlock.getLocation());
-                trackPositionsCheck(adjacentBlock);
-                for(RealPortal portal : portals){
-                    if(!this.isRedstoneActive(portal)){
-                        portal.close(true);
-                    } else {
-                        portal.open(null);
-                    }
-                }
-            }
-        }
-
     }
 
     @Override
@@ -200,19 +193,18 @@ public class OrRedstoneEngine implements RedstoneEngine{
         }
     }
 
+    /**
+     * Track what happens when a block is placed
+     */
     @Override
     public void onBlockPlace(Block block){
+        /*
+         * The only real block that gives of a redstone signal without creating a BlockRedstoneEvent on creation
+         * is the redstone torch, thereby excluding all other blocks from further unnecessary processing
+         */
         if( !(block.getType() == Material.REDSTONE_TORCH || block.getType() == Material.REDSTONE_WALL_TORCH)){
             return;
         }
-
-
-        Set<RealPortal> portals = stopTrackingPosition(block.getLocation());
         trackPositionsCheck(block);
-        for(RealPortal portal : portals){
-            if(!isRedstoneActive(portal)){
-                portal.close(true);
-            }
-        }
     }
 }
