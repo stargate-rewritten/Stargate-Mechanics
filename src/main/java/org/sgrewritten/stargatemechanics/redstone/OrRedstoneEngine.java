@@ -66,6 +66,7 @@ public class OrRedstoneEngine implements RedstoneEngine{
             case REDSTONE_WIRE -> handleRedstoneWire(block);
             case REPEATER, OBSERVER, COMPARATOR -> handleDirectional(block);
             case LEVER -> handleSwitch(block);
+            case REDSTONE_TORCH, REDSTONE_WALL_TORCH -> checkRelativePosition(block,BlockFace.UP);
             default -> {}
         }
 
