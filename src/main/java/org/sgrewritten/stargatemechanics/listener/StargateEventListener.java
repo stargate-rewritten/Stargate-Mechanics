@@ -15,6 +15,7 @@ import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.format.SignLineType;
 import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.exception.ParseException;
@@ -100,6 +101,12 @@ public class StargateEventListener implements Listener{
         ColorOverride colorOverride = coloringOverrideRegistry.getColorOverride(event.getSign().getLocation());
         for(SignLine line : event.getLines()) {
             ColorOverrideFormatter.formatFromOverride(colorOverride, line);
+            if(line.getType() == SignLineType.NETWORK) {
+                RealPortal portal = registry.getPortalFromPortalPosition(event.getPortalPosition());
+                if (portal.hasFlag(PortalFlag.HIDE_NETWORK)){
+                    line.getComponents().clear();
+                }
+            }
         }
     }
 
