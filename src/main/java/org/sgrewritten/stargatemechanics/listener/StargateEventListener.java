@@ -5,10 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.sgrewritten.stargate.api.event.gate.StargateSignFormatGateEvent;
-import org.sgrewritten.stargate.api.event.portal.StargateClosePortalEvent;
-import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
-import org.sgrewritten.stargate.api.event.portal.StargateListPortalEvent;
-import org.sgrewritten.stargate.api.event.portal.StargateSignDyeChangePortalEvent;
+import org.sgrewritten.stargate.api.event.portal.*;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
@@ -124,5 +121,12 @@ public class StargateEventListener implements Listener{
     private boolean playerCanSeeHiddenPortal(Portal portalToSee, Player player) {
         return player != null && (player.hasPermission(BypassPermission.HIDDEN.getPermissionString())
                 || portalToSee.getOwnerUUID().equals(player.getUniqueId()));
+    }
+
+    @EventHandler
+    public void onStargateSendMessagePortalEvent(StargateSendMessagePortalEvent event){
+        if(event.getPortal().hasFlag(PortalFlag.SILENT)){
+            event.setCancelled(true);
+        }
     }
 }
