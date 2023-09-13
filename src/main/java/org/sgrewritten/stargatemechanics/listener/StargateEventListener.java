@@ -1,17 +1,21 @@
 package org.sgrewritten.stargatemechanics.listener;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.sgrewritten.stargate.api.event.gate.StargateSignFormatGateEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateClosePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
+import org.sgrewritten.stargate.api.event.portal.StargateListPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateSignDyeChangePortalEvent;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
+import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.permission.BypassPermission;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.exception.ParseException;
 import org.sgrewritten.stargatemechanics.locale.LanguageManager;
@@ -100,5 +104,18 @@ public class StargateEventListener implements Listener{
     }
 
     @EventHandler
-    public void onStargate
+    public void onStargateListPortalEvent(StargateListPortalEvent event){
+        if(event.getPortal().hasFlag(PortalFlag.FORCE_SHOW)){
+            event.setDeny(false);
+            return;
+        }
+        if(event.getPortal().hasFlag(PortalFlag.HIDDEN) && !playerCanSeeHiddenPortal(event.getListedPortal(),(Player) event.getEntity())){
+            event.setDeny(true);
+        }
+    }
+
+    private boolean playerCanSeeHiddenPortal(Portal portalToSee, Player player) {
+        return player != null && (player.hasPermission(BypassPermission.HIDDEN.getPermissionString())
+                || portalToSee.getOwnerUUID().equals(player.getUniqueId()));
+    }
 }
