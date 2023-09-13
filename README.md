@@ -32,14 +32,6 @@ StarGate-Mechanics consists of two parts (both of which may be toggled in whole 
   - Right-clicking an Echo Shard on a portal binds the echo shard to that portal; right-clicking an Echo Shard will then teleport the player to the portal was bound to, consuming the shard in the process.
   - Right-clicking a Bundle or Shulker Box full of certain items (dyes, glowstone, glowsquid ink, etc.) will customise the colour scheme of a sign, consuming the items in the process.
 ### Additional Gate Types
-This system adds certain immersive behaviours that are 
-  - The `C` flag, which will leave a portal open for a specified amount of time once activated.
-    - This flag is incompatible with the `D` flag.
-    - Within the TIR component, this flag is activated by right-clicking the gate with a Curse of Vanishing Enchanted Book.
-      - The gate has one minute loaded to the `C` flag by default;
-        - Right-clicking it with Clocks adds one minute per clock (consuming the items)
-        - Right-clicking it with Daylight Sensors adds 20 minutes per sensor (consuming the items)
-    - Outside of the TIR component, this flag follows the form `C[0d0h0m0s]` where d, h, m, and s respectively indicate days, hours, minutes, and seconds.
   - The `D` flag, which will destroy the portal after a certain period of time.
     - This flag is incompatible with the `C` flag.
     - Within the TIR component, this flag follows the exact same mechanics as the `C` flag, but with gunpowder instead of a Vanishing Book
