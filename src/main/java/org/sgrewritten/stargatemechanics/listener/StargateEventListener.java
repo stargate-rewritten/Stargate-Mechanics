@@ -50,6 +50,10 @@ public class StargateEventListener implements Listener{
         if(event.getPortal().hasFlag(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation())){
             ButtonUtils.removeButtonsFromPortal(realPortal);
             RedstoneUtils.loadPortal(realPortal, engine);
+            if(event.getPortal().hasFlag(PortalFlag.NETWORKED) || event.getPortal().hasFlag(PortalFlag.ALWAYS_ON)){
+                event.removeFlag(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation());
+                event.getEntity().sendMessage("Removing E gate flag...");
+            }
         }
     }
 
