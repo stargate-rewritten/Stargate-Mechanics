@@ -24,6 +24,7 @@ public class RedstoneWireUtils {
                 Location otherLocation = location.clone().add(face.getDirection());
                 output.add(new BlockLocation(otherLocation));
             }
+            output.add(new BlockLocation(redstoneWireBlock.getRelative(BlockFace.DOWN).getLocation()));
         }
         return output;
     }

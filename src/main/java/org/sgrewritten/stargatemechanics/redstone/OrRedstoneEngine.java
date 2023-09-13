@@ -12,12 +12,9 @@ import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargatemechanics.StargateMechanics;
-import org.sgrewritten.stargatemechanics.utils.VectorUtils;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneWireUtils;
 
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * Redstone engine that decides the state of a gate based of or condition of all the signals
@@ -45,7 +42,7 @@ public class OrRedstoneEngine implements RedstoneEngine{
             this.stopTrackingPosition(block.getLocation());
             for(RealPortal portal : portals){
                 if(!this.isRedstoneActive(portal)){
-                    portal.close(true);
+                    this.updatePortalState(portal);
                 }
             }
         } else {
@@ -79,7 +76,7 @@ public class OrRedstoneEngine implements RedstoneEngine{
         RealPortal portal = registry.getPortal(effectedBlock.getLocation(), GateStructureType.FRAME);
         if(portal != null){
             trackPosition(new BlockLocation(block.getLocation()),portal);
-            portal.open(null);
+            this.updatePortalState(portal);
         }
     }
     private void handleSwitch(Block block){
@@ -111,7 +108,7 @@ public class OrRedstoneEngine implements RedstoneEngine{
             RealPortal portal = registry.getPortal(effectedBlock, GateStructureType.FRAME);
             if(portal != null){
                 trackPosition(new BlockLocation(block.getLocation()),portal);
-                portal.open(null);
+                this.updatePortalState(portal);
             }
         }
     }
@@ -129,7 +126,7 @@ public class OrRedstoneEngine implements RedstoneEngine{
         Set<RealPortal> portals = stopTrackingPosition(location);
         for(RealPortal portal : portals){
             if(!isRedstoneActive(portal)){
-                portal.close(true);
+                this.updatePortalState(portal);
             }
         }
     }
@@ -137,7 +134,7 @@ public class OrRedstoneEngine implements RedstoneEngine{
     @Override
     public void updatePortalState(RealPortal portal){
         if(isRedstoneActive(portal)){
-            if(!portal.isOpen()){
+            if(!portal.isOpen() && portal.getDestination() != null) {
                 portal.open(null);
             }
         } else {
@@ -180,6 +177,10 @@ public class OrRedstoneEngine implements RedstoneEngine{
 
     @Override
     public void onBlockChange(Block block){
+        /*
+         * The only block that change how it conducts redstone depends on its block state
+         * is REDSTONE_WIRE
+         */
         if(block.getType() != Material.REDSTONE_WIRE || block.getBlockPower() == 0){
             return;
         }
@@ -188,7 +189,7 @@ public class OrRedstoneEngine implements RedstoneEngine{
         trackPositionsCheck(block);
         for(RealPortal portal : portals){
             if(!isRedstoneActive(portal)){
-                portal.close(true);
+                this.updatePortalState(portal);
             }
         }
     }
@@ -200,7 +201,7 @@ public class OrRedstoneEngine implements RedstoneEngine{
     public void onBlockPlace(Block block){
         /*
          * The only real block that gives of a redstone signal without creating a BlockRedstoneEvent on creation
-         * is the redstone torch, thereby excluding all other blocks from further unnecessary processing
+         * is the redstone torch, thereby we're excluding all other blocks from further unnecessary processing
          */
         if( !(block.getType() == Material.REDSTONE_TORCH || block.getType() == Material.REDSTONE_WALL_TORCH)){
             return;
