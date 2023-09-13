@@ -14,6 +14,8 @@ import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.exception.ParseException;
+import org.sgrewritten.stargatemechanics.locale.LanguageManager;
+import org.sgrewritten.stargatemechanics.locale.LocalizedMessageType;
 import org.sgrewritten.stargatemechanics.metadata.MetaData;
 import org.sgrewritten.stargatemechanics.metadata.MetaDataWriter;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
@@ -22,21 +24,27 @@ import org.sgrewritten.stargatemechanics.signcoloring.ColorOverride;
 import org.sgrewritten.stargatemechanics.signcoloring.ColorOverrideFormatter;
 import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideRegistry;
 import org.sgrewritten.stargatemechanics.utils.ButtonUtils;
+import org.sgrewritten.stargatemechanics.utils.LocalizedMessageFormatter;
 import org.sgrewritten.stargatemechanics.utils.SignUtils;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
+
+import java.util.List;
 
 public class StargateEventListener implements Listener{
 
     private final RegistryAPI registry;
     private final RedstoneEngine engine;
     private final ColoringOverrideRegistry coloringOverrideRegistry;
+    private final LanguageManager languageManager;
     private StargateMechanics plugin;
 
-    public StargateEventListener(StargateMechanics plugin, RegistryAPI registry, RedstoneEngine engine, ColoringOverrideRegistry coloringOverrideRegistry) {
+    public StargateEventListener(StargateMechanics plugin, RegistryAPI registry, RedstoneEngine engine,
+                                 ColoringOverrideRegistry coloringOverrideRegistry, LanguageManager languageManager) {
         this.plugin = plugin;
         this.registry = registry;
         this.engine = engine;
         this.coloringOverrideRegistry = coloringOverrideRegistry;
+        this.languageManager = languageManager;
     }
     
     @EventHandler(ignoreCancelled = true)
@@ -52,7 +60,9 @@ public class StargateEventListener implements Listener{
             RedstoneUtils.loadPortal(realPortal, engine);
             if(event.getPortal().hasFlag(PortalFlag.NETWORKED) || event.getPortal().hasFlag(PortalFlag.ALWAYS_ON)){
                 event.removeFlag(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation());
-                event.getEntity().sendMessage("Removing E gate flag...");
+                String unformattedMsg = languageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED);
+                event.getEntity().sendMessage(LocalizedMessageFormatter.insertFlags(unformattedMsg,
+                        List.of(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation())));
             }
         }
     }
@@ -88,4 +98,7 @@ public class StargateEventListener implements Listener{
             ColorOverrideFormatter.formatFromOverride(colorOverride, line);
         }
     }
+
+    @EventHandler
+    public void onStargate
 }

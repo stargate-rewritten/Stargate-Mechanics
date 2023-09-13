@@ -1,0 +1,12 @@
+locale: en
+
+gates:
+  flags:
+    # true is enabled
+    redstonePowered: true
+    hideNetwork: true
+
+
+signFormatting:
+  # DISABLED, ENABLED, ADVANCED
+  dyeColoring: DISABLED
