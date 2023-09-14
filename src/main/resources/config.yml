@@ -34,11 +34,11 @@ gates:
 
     #What flags should be on generated (destination) J portals by default?
     # This setting is ignored unless jumpGateGenerationBehaviour is True.
-    jumpGateDestinationFlags: HD{5184000}
+    jumpGateDestinationFlags: 'HD{5184000}'
 
 
     #What flags should be on generated G portals by default?
-    generateGateDestinationFlags: null
+    generateGateDestinationFlags: ''
 
     #Where should generated J gates link?
     # Options:
