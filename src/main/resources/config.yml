@@ -6,6 +6,53 @@ gates:
     redstonePowered: true
     hideNetwork: true
 
+  generation:
+    # Configurations Needed for Stargate Mechanics G, J, & Ruined Flags/Behaviours.
+
+    # If needed, should G and J gates break blocks to generate?
+    # Note that it will be impossible to specify a Y coord on a G gate if this is false.
+    agressiveGateGeneration: true
+
+    # When a new G or J gate is generated, what behaviour should select the gateformat?
+    # Options:
+    #    - Origin [Duplicate the origin portal's design in the destination]
+    #    - Region [Figure out the most logical default portal design]
+    #      (i.e. netherportals in the nether, underwater portals at the bottom of the ocean, etc.)
+    #    - Specific [Specify a .gate file for the portal's destination's design].
+    #    - Ruined [Force the portal to generate as an existing ruined portal]
+    #      (WILL REDIRECT G GATES; WILL SIGNIFICANTLY LIMIT J GATES)
+    gateformatSelectionMethod: region
+
+    # This setting is ignored unless gateFormatSelectionMethod is set to "Specific"
+    specifiedGateFormat: nether.gate
+
+    # Should J gates generate a destination portal?
+    # Options:
+    #    - False [Teleport the player to the destination; do not generate a gate].
+    #    - True [Generate a portal at the destination].
+    jumpGateGenerationBehaviour: True
+
+    #What flags should be on generated (destination) J portals by default?
+    # This setting is ignored unless jumpGateGenerationBehaviour is True.
+    jumpGateDestinationFlags: HD{5184000}
+
+
+    #What flags should be on generated G portals by default?
+    generateGateDestinationFlags: null
+
+    #Where should generated J gates link?
+    # Options:
+    #  - FixedReturn
+    #  - OriginNetwork
+    #  - SpecifiedReturn
+    #  - None
+    defaultJGateDestination: FixedReturn
+
+    # This setting is ignored unless specifiedJGateDestination is set to "SpecifiedReturn"
+    specifiedJGateDestination:
+      - destinationName: default
+      - networkName: default
+
 
 signFormatting:
   # DISABLED, ENABLED, ADVANCED
