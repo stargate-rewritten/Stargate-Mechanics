@@ -1,2 +1,2 @@
-prefix=§#46634e[SG-Mechanics]§r
+prefix=[SG-Mechanics]
 flagRemoved=The flag(s) %flags% was removed, as it was incompatible with another flag

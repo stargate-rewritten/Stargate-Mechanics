@@ -1,4 +1,4 @@
-package org.sgrewritten.stargatemechanics.utils;
+package org.sgrewritten.stargatemechanics.locale;
 
 import java.util.Collection;
 

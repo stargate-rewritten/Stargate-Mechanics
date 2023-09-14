@@ -54,7 +54,7 @@ public class StargateMechanics extends JavaPlugin {
         this.colorRegistry = new ColoringOverrideRegistry();
         new ColoringOverrideLoader().load(stargateAPI.getRegistry(), colorRegistry);
         try {
-            this.languageManager = new LanguageManager(this.getDataFolder(),this.getConfig().getString(ConfigurationOption.LOCALE.getKey()));
+            this.languageManager = new LanguageManager(this,this.getConfig().getString(ConfigurationOption.LOCALE.getKey()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

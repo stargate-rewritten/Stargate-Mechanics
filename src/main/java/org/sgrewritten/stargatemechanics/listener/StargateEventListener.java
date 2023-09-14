@@ -26,7 +26,7 @@ import org.sgrewritten.stargatemechanics.signcoloring.ColorOverride;
 import org.sgrewritten.stargatemechanics.signcoloring.ColorOverrideFormatter;
 import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideRegistry;
 import org.sgrewritten.stargatemechanics.utils.ButtonUtils;
-import org.sgrewritten.stargatemechanics.utils.LocalizedMessageFormatter;
+import org.sgrewritten.stargatemechanics.locale.LocalizedMessageFormatter;
 import org.sgrewritten.stargatemechanics.utils.SignUtils;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
 
