@@ -12,9 +12,9 @@ public class LanguageManager {
     private final Properties defaultLocale;
     private final File pluginFolder;
     private final StargateMechanics plugin;
-    private Properties properties;
+    private final Properties properties;
 
-    private ChatColor prefixColor = ChatColor.of("#46634e");
+    private final ChatColor prefixColor = ChatColor.of("#46634e");
 
     public LanguageManager(StargateMechanics plugin, String language) throws IOException {
         this.properties = new Properties();
@@ -35,7 +35,6 @@ public class LanguageManager {
         File languageFile = new File(localeFolder,language + ".txt");
         if(!languageFile.exists()){
             String internalPath = "locale/" + language + ".txt";
-            StargateMechanics.log(Level.INFO, internalPath);
             plugin.saveResource(internalPath,false);
         }
         try(InputStream stream = new FileInputStream(languageFile)) {

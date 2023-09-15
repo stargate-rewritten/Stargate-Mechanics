@@ -1,5 +1,5 @@
 package org.sgrewritten.stargatemechanics.metadata;
 
 public enum MetaData {
-    SIGN_COLOR
+    DESTINATION_COORDS, SIGN_COLOR
 }

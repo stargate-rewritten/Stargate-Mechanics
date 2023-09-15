@@ -5,7 +5,8 @@ public enum MechanicsFlag {
     REDSTONE_POWERED('E',true),
     RANDOM_WORLD('W',true),
 
-    COORD_PORTAL('L',true);
+    COORD('G',true),
+    RANDOM_COORD('J', true);
     
 
     private final char characterRepresentation;

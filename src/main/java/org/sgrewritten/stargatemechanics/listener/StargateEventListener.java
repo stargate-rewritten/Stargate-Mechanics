@@ -18,6 +18,7 @@ import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.exception.ParseException;
 import org.sgrewritten.stargatemechanics.locale.LanguageManager;
 import org.sgrewritten.stargatemechanics.locale.LocalizedMessageType;
+import org.sgrewritten.stargatemechanics.locale.MessageSender;
 import org.sgrewritten.stargatemechanics.metadata.MetaData;
 import org.sgrewritten.stargatemechanics.metadata.MetaDataWriter;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
@@ -31,6 +32,8 @@ import org.sgrewritten.stargatemechanics.utils.SignUtils;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StargateEventListener implements Listener{
 
@@ -63,10 +66,42 @@ public class StargateEventListener implements Listener{
             if(event.getPortal().hasFlag(PortalFlag.NETWORKED) || event.getPortal().hasFlag(PortalFlag.ALWAYS_ON)){
                 event.removeFlag(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation());
                 String unformattedMsg = languageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED);
-                event.getEntity().sendMessage(LocalizedMessageFormatter.insertFlags(unformattedMsg,
+                MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg,
                         List.of(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation())));
             }
         }
+        if(event.getPortal().hasFlag(MechanicsFlag.COORD.getCharacterRepresentation())){
+            if(!event.getPortal().hasFlag(PortalFlag.FIXED)){
+                String unformattedMsg = languageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED);
+                MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg,
+                        List.of(MechanicsFlag.COORD.getCharacterRepresentation())));
+            }
+            insertCoordinateStringFromLine(realPortal,event.getLine(3),MechanicsFlag.COORD.getCharacterRepresentation());
+        }
+        if(event.getPortal().hasFlag(MechanicsFlag.RANDOM_COORD.getCharacterRepresentation())){
+            insertCoordinateStringFromLine(realPortal,event.getLine(3),MechanicsFlag.RANDOM_COORD.getCharacterRepresentation());
+        }
+
+    }
+
+    public void insertCoordinateStringFromLine(RealPortal realPortal, String line, Character flagCharacter){
+        String metaData = realPortal.getMetaData();
+        try {
+            realPortal.setMetaData(MetaDataWriter.addMetaData(MetaData.DESTINATION_COORDS,
+                    findFlagInstructionsString(line,
+                            MechanicsFlag.COORD.getCharacterRepresentation()),metaData));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String findFlagInstructionsString(String line, Character flagCharacter){
+        Pattern pattern = Pattern.compile("(?<="+flagCharacter+"\\{)(.*)(?=\\})");
+        Matcher matcher = pattern.matcher(line.toUpperCase());
+        if(matcher.find()){
+            return matcher.group(1);
+        }
+        return "";
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -127,6 +162,13 @@ public class StargateEventListener implements Listener{
     public void onStargateSendMessagePortalEvent(StargateSendMessagePortalEvent event){
         if(event.getPortal().hasFlag(PortalFlag.SILENT)){
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onStargateOpenPortalEvent(StargateOpenPortalEvent event){
+        if(event.getPortal().hasFlag(MechanicsFlag.COORD.getCharacterRepresentation())){
+
         }
     }
 }
