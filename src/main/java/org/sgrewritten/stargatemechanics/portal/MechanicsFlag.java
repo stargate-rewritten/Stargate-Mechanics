@@ -6,7 +6,11 @@ public enum MechanicsFlag {
     RANDOM_WORLD('W',true),
 
     COORD('G',true),
-    RANDOM_COORD('J', true);
+    RANDOM_COORD('J', true),
+
+    OPEN_TIMER('C', true),
+
+    DESTROY_TIMER('D', true);
     
 
     private final char characterRepresentation;

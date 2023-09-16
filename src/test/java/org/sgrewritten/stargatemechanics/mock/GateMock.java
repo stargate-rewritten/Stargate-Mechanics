@@ -19,9 +19,17 @@ import java.util.List;
 public class GateMock implements GateAPI {
 
     private final GateFormatMock gateFormat;
+    private final BlockFace facing;
+    private final Location topLeft;
 
-    public GateMock(String formatName){
+    public GateMock(String formatName, BlockFace facing, Location topLeft){
         this.gateFormat = new GateFormatMock(formatName);
+        this.facing = facing;
+        this.topLeft = topLeft;
+    }
+
+    public GateMock(String formatName, Location topLeft){
+        this(formatName,BlockFace.EAST, topLeft);
     }
 
     @Override
@@ -66,7 +74,7 @@ public class GateMock implements GateAPI {
 
     @Override
     public BlockFace getFacing() {
-        return null;
+        return this.facing;
     }
 
     @Override
@@ -86,7 +94,7 @@ public class GateMock implements GateAPI {
 
     @Override
     public Location getTopLeft() {
-        return null;
+        return topLeft;
     }
 
     @Override

@@ -24,8 +24,6 @@ import org.sgrewritten.stargatemechanics.redstone.OrRedstoneEngine;
 import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideRegistry;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.logging.Level;
 
 
 class StargateEventListenerTest {
@@ -49,7 +47,7 @@ class StargateEventListenerTest {
         this.server = MockBukkit.mock();
         this.world = server.addSimpleWorld("world");
         this.player = server.addPlayer("player");
-        this.gate = new GateMock("nether.gate");
+        this.gate = new GateMock("nether.gate", new Location(world,10,14,10));
         this.network = new NetworkMock("network");
         this.exit = new Location(world,10,10,10);
         this.portal = new PortalMock(gate,network, exit);
@@ -68,15 +66,18 @@ class StargateEventListenerTest {
     @Test
     void onStargateCreateTest_CoordGate() throws ParseException, IOException {
         String coordString = "10<R<100";
+        String timerString = "1D";
         String[] lines = new String[] {
                 "portal",
                 "",
                 "network",
-                MechanicsFlag.COORD.getCharacterRepresentation() + "{"+coordString+"}"
+                MechanicsFlag.RANDOM_COORD.getCharacterRepresentation() + "{"+coordString+"}" + MechanicsFlag.OPEN_TIMER.getCharacterRepresentation() + "{" + timerString + "}"
         };
-        portal.addFlag(MechanicsFlag.COORD.getCharacterRepresentation());
+        portal.addFlag(MechanicsFlag.RANDOM_COORD.getCharacterRepresentation());
+        portal.addFlag(MechanicsFlag.OPEN_TIMER.getCharacterRepresentation());
         StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
         listener.onStargateCreate(event);
         Assertions.assertEquals(coordString, MetaDataReader.getData(portal.getMetaData(), MetaData.DESTINATION_COORDS));
+        Assertions.assertEquals(timerString, MetaDataReader.getData(portal.getMetaData(), MetaData.COUNTDOWN));
     }
 }

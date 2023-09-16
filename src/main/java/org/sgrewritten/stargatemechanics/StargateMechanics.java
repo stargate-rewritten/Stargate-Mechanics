@@ -97,6 +97,7 @@ public class StargateMechanics extends JavaPlugin {
 
     public static void log(Level level, String message){
         if(instance == null){
+            System.out.println("[" + level + "] " + message);
             return;
         }
         instance.getLogger().log(level,message);
