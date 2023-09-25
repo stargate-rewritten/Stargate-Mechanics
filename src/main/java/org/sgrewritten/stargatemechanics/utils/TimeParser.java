@@ -32,6 +32,6 @@ public class TimeParser {
 
     private static long parseTimeUnits(Matcher matcher){
         TimeUnit timeUnit = TimeUnit.valueOf(matcher.group(3).toLowerCase().toCharArray()[0]);
-        return timeUnit.getTime()*NumberParser.parseLong(matcher.group(1));
+        return (long) (timeUnit.getTime()*NumberParser.parseDouble(matcher.group(1)));
     }
 }
