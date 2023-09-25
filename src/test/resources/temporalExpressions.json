@@ -1,0 +1,34 @@
+[
+  {
+    "expression" : "1t",
+    "value" : 50
+  },
+  {
+    "expression" : "1s",
+    "value" : 1000
+  },
+  {
+    "expression" : "1m",
+    "value" : 60000
+  },
+  {
+    "expression" : "1h",
+    "value" : 3600000
+  },
+  {
+    "expression" : "1t1s",
+    "value" : 1050
+  },
+  {
+    "expression" : "1s1t",
+    "value" : 1050
+  },
+  {
+    "expression" : "0.5s",
+    "value" : 500
+  },
+  {
+    "expression" : "1e1s",
+    "value" : 10000
+  }
+]

@@ -32,7 +32,7 @@ public class CoordinateParser {
                     String[] expressionSplit = coordExpression.split(",");
                     int x = parseCoord(expressionSplit[0], topLeft.getBlockX());
                     int z = parseCoord(expressionSplit[1], topLeft.getBlockZ());
-                    int y = topLeft.getWorld().getHighestBlockAt(x, z).getY();
+                    int y = topLeft.getWorld().getHighestBlockYAt(x,z);
                     xyz = new BlockVector(x,y,z);
                 }
                 case 2 -> {
@@ -49,7 +49,7 @@ public class CoordinateParser {
                     try {
                         y = parseCoord(coordExpression, topLeft.getBlockY(), 'Y');
                     } catch (IllegalArgumentException | ParseException e) {
-                        y = topLeft.getWorld().getHighestBlockAt(x, z).getY();
+                        y = topLeft.getWorld().getHighestBlockYAt(x,z);
                     }
                     xyz = new BlockVector(x,y,z);
                 }
