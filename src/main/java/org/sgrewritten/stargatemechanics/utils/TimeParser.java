@@ -18,10 +18,8 @@ public class TimeParser {
     public static long parseTime(String timeString){
         Matcher matcher = SEPARATED_NUMBER_WITH_TIME_UNITS.matcher(timeString);
         if(!matcher.find()){
-            StargateMechanics.log(Level.INFO, "There was not a match");
             return TimeUnit.TICK.getTime()*NumberParser.parseLong(timeString);
         } else {
-            StargateMechanics.log(Level.INFO, "There was a match");
             long counter = parseTimeUnits(matcher);
             while(matcher.find()){
                 counter += parseTimeUnits(matcher);
