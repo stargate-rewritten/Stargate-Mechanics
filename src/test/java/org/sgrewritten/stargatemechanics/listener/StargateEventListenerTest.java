@@ -78,6 +78,6 @@ class StargateEventListenerTest {
         StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
         listener.onStargateCreate(event);
         Assertions.assertEquals(coordString, MetaDataReader.getData(portal.getMetaData(), MetaData.DESTINATION_COORDS));
-        Assertions.assertEquals(timerString, MetaDataReader.getData(portal.getMetaData(), MetaData.COUNTDOWN));
+        Assertions.assertEquals(timerString, MetaDataReader.getData(portal.getMetaData(), MetaData.OPEN_COUNTDOWN));
     }
 }

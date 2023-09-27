@@ -16,9 +16,9 @@ public class TimeParser {
      * @return
      */
     public static long parseTime(String timeString){
-        Matcher matcher = SEPARATED_NUMBER_WITH_TIME_UNITS.matcher(timeString);
+        Matcher matcher = SEPARATED_NUMBER_WITH_TIME_UNITS.matcher(timeString.toLowerCase());
         if(!matcher.find()){
-            return TimeUnit.TICK.getTime()*NumberParser.parseLong(timeString);
+            return TimeUnit.TICK.getTime()*NumberParser.parseLong(timeString.toLowerCase());
         } else {
             long counter = parseTimeUnits(matcher);
             while(matcher.find()){
@@ -29,7 +29,7 @@ public class TimeParser {
     }
 
     private static long parseTimeUnits(Matcher matcher){
-        TimeUnit timeUnit = TimeUnit.valueOf(matcher.group(3).toLowerCase().toCharArray()[0]);
+        TimeUnit timeUnit = TimeUnit.valueOf(matcher.group(3).toCharArray()[0]);
         return (long) (timeUnit.getTime()*NumberParser.parseDouble(matcher.group(1)));
     }
 }

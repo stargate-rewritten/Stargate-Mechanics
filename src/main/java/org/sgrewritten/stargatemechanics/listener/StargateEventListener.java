@@ -31,6 +31,7 @@ import org.sgrewritten.stargatemechanics.utils.ButtonUtils;
 import org.sgrewritten.stargatemechanics.locale.LocalizedMessageFormatter;
 import org.sgrewritten.stargatemechanics.utils.CoordinateParser;
 import org.sgrewritten.stargatemechanics.utils.SignUtils;
+import org.sgrewritten.stargatemechanics.utils.TimeParser;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
 
 import java.util.List;
@@ -116,11 +117,25 @@ public class StargateEventListener implements Listener{
         } else {
             //TODO localization
             MessageSender.sendMessage(entity,"Invalid input arguments for flag '" + flagCharacter +"', removing flag");
+            portal.removeFlag(flagCharacter);
         }
     }
 
     private void insertTimerData(RealPortal portal, String line, Entity entity, Character flagCharacter){
-
+        String value = findFlagInstructionsString(line,flagCharacter);
+        try {
+            TimeParser.parseTime(value);
+            if(MechanicsFlag.DESTROY_TIMER.getCharacterRepresentation() == flagCharacter){
+                insertMetaDataFromFlagArgument(portal, MetaData.DESTROY_COUNTDOWN, value);
+            } else if (MechanicsFlag.OPEN_TIMER.getCharacterRepresentation() == flagCharacter) {
+                insertMetaDataFromFlagArgument(portal, MetaData.OPEN_COUNTDOWN, value);
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        } catch (IllegalStateException e) {
+            MessageSender.sendMessage(entity,"Invalid input arguments for flag '" + flagCharacter +"', removing flag");
+            portal.removeFlag(flagCharacter);
+        }
     }
 
     private void insertMetaDataFromFlagArgument(RealPortal realPortal, MetaData metaDataType, String value){

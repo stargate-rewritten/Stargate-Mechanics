@@ -4,6 +4,10 @@
     "value" : 50
   },
   {
+    "expression" : "1T",
+    "value" : 50
+  },
+  {
     "expression" : "1s",
     "value" : 1000
   },
@@ -14,6 +18,18 @@
   {
     "expression" : "1h",
     "value" : 3600000
+  },
+  {
+    "expression" : "1d",
+    "value" : 86400000
+  },
+  {
+    "expression" : "1w",
+    "value" : 604800000
+  },
+  {
+    "expression" : "1y",
+    "value" : 31536000000
   },
   {
     "expression" : "1t1s",
