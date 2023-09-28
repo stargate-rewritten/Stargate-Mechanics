@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
+import org.sgrewritten.stargate.api.network.portal.PortalFlag;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.exception.ParseException;
 import org.sgrewritten.stargatemechanics.locale.LanguageManager;
@@ -98,7 +99,7 @@ class StargateEventListenerTest {
 
     @Test
     void onStargateCreateTest_InvalidCoordArgument() {
-        String coordString = "1,2,q";
+        String coordString = "";
         String[] lines = new String[] {
                 "portal",
                 "",
@@ -106,6 +107,7 @@ class StargateEventListenerTest {
                 MechanicsFlag.COORD.getCharacterRepresentation() + "{"+coordString+"}"
         };
         portal.addFlag(MechanicsFlag.COORD.getCharacterRepresentation());
+        portal.addFlag(PortalFlag.FIXED.getCharacterRepresentation());
         StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
         listener.onStargateCreate(event);
         Assertions.assertFalse(portal.hasFlag(MechanicsFlag.COORD.getCharacterRepresentation()));

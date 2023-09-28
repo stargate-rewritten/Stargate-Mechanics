@@ -35,6 +35,7 @@ import org.sgrewritten.stargatemechanics.utils.TimeParser;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -108,7 +109,7 @@ public class StargateEventListener implements Listener{
                 throw new UnsupportedOperationException();
             }
             insertMetaDataFromFlagArgument(portal,MetaData.DESTINATION_COORDS,value);
-        } catch (ParseException | IllegalStateException e){
+        } catch (ParseException e){
             MessageSender.sendMessage(entity, languageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INVALID_ARGUMENT));
             portal.removeFlag(flagCharacter);
         }
