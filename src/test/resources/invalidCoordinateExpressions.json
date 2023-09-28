@@ -1,0 +1,59 @@
+[
+  {
+    "expression" : "kebab"
+  },
+  {
+    "expression" : "x,y,z"
+  },
+  {
+    "expression" : "1,2,3:1:2"
+  },
+  {
+    "expression" : "q,q,q"
+  },
+  {
+    "expression" : "1"
+  },
+  {
+    "expression" : "1,2,3:100000000"
+  },
+  {
+    "expression" : "~~~1,2,3"
+  },
+  {
+    "expression" : "345678i,345678i,345678i"
+  },
+  {
+    "expression" : "-45678"
+  },
+  {
+    "expression" : "8e8e8"
+  },
+  {
+    "expression" : "9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9"
+  },
+  {
+    "expression" : "12,34,56,78,90"
+  },
+  {
+    "expression" : "12,,,,5,,3"
+  },
+  {
+    "expression" : ",,,,,"
+  },
+  {
+    "expression" : "53;53;53"
+  },
+  {
+    "expression" : "53E3?"
+  },
+  {
+    "expression" : "43^32"
+  },
+  {
+    "expression" : "53E3?"
+  },
+  {
+    "expression" : "§432,32,§a443"
+  }
+]

@@ -56,4 +56,10 @@ class CoordinateParserTest {
     void getRandomLocationFromExpression() {
 
     }
+
+    @ParameterizedTest
+    @JsonFileSource(resources = "/invalidCoordinateExpressions.json")
+    void getLocationExpression_Invalid(JsonObject object) {
+        Assertions.assertThrows(ParseException.class, () -> CoordinateParser.getLocationFromExpression(object.getString("expression").toUpperCase(), portal));
+    }
 }

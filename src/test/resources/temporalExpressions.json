@@ -50,5 +50,9 @@
   {
     "expression" : "10",
     "value" : 500
+  },
+  {
+    "expression" : "1t,2s",
+    "value" : 2050
   }
 ]

@@ -75,7 +75,7 @@ public class CoordinateParser {
         }
     }
 
-    private static int parseCoord(String coordString, int originCoord){
+    private static int parseCoord(String coordString, int originCoord) throws ParseException {
         if(coordString.charAt(0) == '~'){
             return originCoord + NumberParser.parseInt(coordString.replaceAll("^~",""));
         } else {
