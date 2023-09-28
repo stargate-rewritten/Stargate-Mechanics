@@ -80,4 +80,49 @@ class StargateEventListenerTest {
         Assertions.assertEquals(coordString, MetaDataReader.getData(portal.getMetaData(), MetaData.DESTINATION_COORDS));
         Assertions.assertEquals(timerString, MetaDataReader.getData(portal.getMetaData(), MetaData.OPEN_COUNTDOWN));
     }
+
+    @Test
+    void onStargateCreateTest_InvalidRandomCoordArgument() {
+        String coordString = "10<R<g";
+        String[] lines = new String[] {
+                "portal",
+                "",
+                "network",
+                MechanicsFlag.RANDOM_COORD.getCharacterRepresentation() + "{"+coordString+"}"
+        };
+        portal.addFlag(MechanicsFlag.RANDOM_COORD.getCharacterRepresentation());
+        StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
+        listener.onStargateCreate(event);
+        Assertions.assertFalse(portal.hasFlag(MechanicsFlag.RANDOM_COORD.getCharacterRepresentation()));
+    }
+
+    @Test
+    void onStargateCreateTest_InvalidCoordArgument() {
+        String coordString = "1,2,q";
+        String[] lines = new String[] {
+                "portal",
+                "",
+                "network",
+                MechanicsFlag.COORD.getCharacterRepresentation() + "{"+coordString+"}"
+        };
+        portal.addFlag(MechanicsFlag.COORD.getCharacterRepresentation());
+        StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
+        listener.onStargateCreate(event);
+        Assertions.assertFalse(portal.hasFlag(MechanicsFlag.COORD.getCharacterRepresentation()));
+    }
+
+    @Test
+    void onStargateCreateTest_InvalidCountdownArgument() {
+        String countdownString = "1q";
+        String[] lines = new String[] {
+                "portal",
+                "",
+                "network",
+                MechanicsFlag.OPEN_TIMER.getCharacterRepresentation() + "{"+countdownString+"}"
+        };
+        portal.addFlag(MechanicsFlag.OPEN_TIMER.getCharacterRepresentation());
+        StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
+        listener.onStargateCreate(event);
+        Assertions.assertFalse(portal.hasFlag(MechanicsFlag.OPEN_TIMER.getCharacterRepresentation()));
+    }
 }

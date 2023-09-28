@@ -1,2 +1,3 @@
 prefix=[SG-Mechanics]
-flagRemoved=The flag(s) %flags% was removed, as it was incompatible with another flag
+flagRemovedIncompatible=The flag(s) %flags% was removed, as it was incompatible with another flag
+flagRemovedInvalidArgument=Invalid input arguments for flag '%flags%', removing flag

@@ -35,7 +35,6 @@ import org.sgrewritten.stargatemechanics.utils.TimeParser;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
 
 import java.util.List;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -69,14 +68,14 @@ public class StargateEventListener implements Listener{
             RedstoneUtils.loadPortal(realPortal, engine);
             if(event.getPortal().hasFlag(PortalFlag.NETWORKED) || event.getPortal().hasFlag(PortalFlag.ALWAYS_ON)){
                 event.removeFlag(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation());
-                String unformattedMsg = languageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED);
+                String unformattedMsg = languageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INCOMPATIBLE);
                 MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg,
                         List.of(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation())));
             }
         }
         if(event.getPortal().hasFlag(MechanicsFlag.COORD.getCharacterRepresentation())){
             if(!event.getPortal().hasFlag(PortalFlag.FIXED) || event.getPortal().hasFlag(MechanicsFlag.RANDOM_COORD.getCharacterRepresentation())){
-                String unformattedMsg = languageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED);
+                String unformattedMsg = languageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INCOMPATIBLE);
                 MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg,
                         List.of(MechanicsFlag.COORD.getCharacterRepresentation())));
             } else {
@@ -99,24 +98,18 @@ public class StargateEventListener implements Listener{
 
     private void insertCoordData(RealPortal portal, String line, Entity entity, Character flagCharacter){
         String value = findFlagInstructionsString(line,flagCharacter);
-        boolean isValidString = false;
-        if(flagCharacter == MechanicsFlag.RANDOM_COORD.getCharacterRepresentation()){
-            try{
+
+        try {
+            if(flagCharacter == MechanicsFlag.RANDOM_COORD.getCharacterRepresentation()){
                 CoordinateParser.getRandomLocationFromExpression(value);
-                isValidString = true;
-            } catch (ParseException | IllegalStateException ignored){}
-        }
-        if(flagCharacter == MechanicsFlag.COORD.getCharacterRepresentation()){
-            try {
+            } else if(flagCharacter == MechanicsFlag.COORD.getCharacterRepresentation()){
                 CoordinateParser.getLocationFromExpression(value,portal);
-                isValidString = true;
-            } catch (ParseException | IllegalStateException ignored){}
-        }
-        if(isValidString){
+            } else {
+                throw new UnsupportedOperationException();
+            }
             insertMetaDataFromFlagArgument(portal,MetaData.DESTINATION_COORDS,value);
-        } else {
-            //TODO localization
-            MessageSender.sendMessage(entity,"Invalid input arguments for flag '" + flagCharacter +"', removing flag");
+        } catch (ParseException | IllegalStateException e){
+            MessageSender.sendMessage(entity, languageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INVALID_ARGUMENT));
             portal.removeFlag(flagCharacter);
         }
     }
@@ -132,8 +125,8 @@ public class StargateEventListener implements Listener{
             } else {
                 throw new UnsupportedOperationException();
             }
-        } catch (IllegalStateException e) {
-            MessageSender.sendMessage(entity,"Invalid input arguments for flag '" + flagCharacter +"', removing flag");
+        } catch (ParseException | IllegalStateException e) {
+            MessageSender.sendMessage(entity, languageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INVALID_ARGUMENT));
             portal.removeFlag(flagCharacter);
         }
     }
