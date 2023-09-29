@@ -1,0 +1,41 @@
+[
+  {
+    "expression" : "10"
+  },
+  {
+    "expression" : "1<r<2"
+  },
+  {
+    "expression" : "1<R<2"
+  },
+  {
+    "expression" : "2>r>1"
+  },
+  {
+    "expression" : "1<r"
+  },
+  {
+    "expression" : "1>r"
+  },
+  {
+    "expression" : "r<1"
+  },
+  {
+    "expression" : "r>2"
+  },
+  {
+    "expression" : "1=r"
+  },
+  {
+    "expression" : "r=2"
+  },
+  {
+    "expression" : "r>1e4"
+  },
+  {
+    "expression" : "r=3;0"
+  },
+  {
+    "expression" : ""
+  }
+]

@@ -52,14 +52,20 @@ class CoordinateParserTest {
         Assertions.assertEquals(destination.getBlockZ(),object.getInt("z"));
     }
 
-    @Test
-    void getRandomLocationFromExpression() {
-
-    }
-
     @ParameterizedTest
     @JsonFileSource(resources = "/invalidCoordinateExpressions.json")
     void getLocationExpression_Invalid(JsonObject object) {
         Assertions.assertThrows(ParseException.class, () -> CoordinateParser.getLocationFromExpression(object.getString("expression").toUpperCase(), portal));
+    }
+    @ParameterizedTest
+    @JsonFileSource(resources = "/randomCoordinateExpressions.json")
+    void getRandomLocationFromExpression(JsonObject object) {
+        Assertions.assertDoesNotThrow(() -> CoordinateParser.getRandomLocationFromExpression(object.getString("expression"), portal));
+    }
+
+    @ParameterizedTest
+    @JsonFileSource(resources = "/invalidRandomCoordinateExpressions.json")
+    void getRandomLocationFromExpression_Invalid(JsonObject object) {
+        Assertions.assertThrows(ParseException.class, () -> CoordinateParser.getRandomLocationFromExpression(object.getString("expression"), portal));
     }
 }

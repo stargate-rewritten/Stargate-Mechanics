@@ -102,7 +102,7 @@ public class StargateEventListener implements Listener{
 
         try {
             if(flagCharacter == MechanicsFlag.RANDOM_COORD.getCharacterRepresentation()){
-                CoordinateParser.getRandomLocationFromExpression(value);
+                CoordinateParser.getRandomLocationFromExpression(value,portal);
             } else if(flagCharacter == MechanicsFlag.COORD.getCharacterRepresentation()){
                 CoordinateParser.getLocationFromExpression(value,portal);
             } else {

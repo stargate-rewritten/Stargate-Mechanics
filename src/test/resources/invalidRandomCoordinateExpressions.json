@@ -1,0 +1,32 @@
+[
+    {
+        "expression" : "1<r<q"
+    },
+    {
+        "expression" : "q<r<1"
+    },
+    {
+        "expression" : "1~r"
+    },
+    {
+        "expression" : "1eq<r"
+    },
+    {
+        "expression" : "1<r<1q"
+    },
+    {
+        "expression" : "1<r>2"
+    },
+    {
+        "expression" : "1;2;3"
+    },
+    {
+        "expression" : "1;1200"
+    },
+    {
+        "expression" : "1<r<1"
+    },
+    {
+        "expression" : "1<r<0"
+    }
+]
