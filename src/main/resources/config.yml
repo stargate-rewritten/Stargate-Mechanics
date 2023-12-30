@@ -37,7 +37,7 @@ gates:
     # Flags are enabled when true, and disalbed when false.
     redstonePowered: true # The E flag.
     hideNetwork: true # The N flag
-# +----------------------------------------------+-----------------------------------------------+ #
+
 # |                                  [ Generation Behaviour ]                                    | #
 # |__       Configurations Needed for Stargate Mechanics G, J, & Ruined Flags/Behaviours.        | #
   generation:
