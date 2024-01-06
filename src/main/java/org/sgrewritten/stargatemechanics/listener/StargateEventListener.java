@@ -14,7 +14,9 @@ import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateListPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateOpenPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateSignDyeChangePortalEvent;
+import org.sgrewritten.stargate.api.event.portal.message.AsyncStargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.StargateSendMessagePortalEvent;
+import org.sgrewritten.stargate.api.event.portal.message.SyncStargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
@@ -223,10 +225,21 @@ public class StargateEventListener implements Listener {
     }
 
     @EventHandler
-    public void onStargateSendMessagePortalEvent(StargateSendMessagePortalEvent event) {
-        if (event.getPortal().hasFlag(PortalFlag.SILENT)) {
+    public void onStargateSendMessagePortalEvent(SyncStargateSendMessagePortalEvent event) {
+        if (shouldCancelStargateSendMessagePortalEvent(event)) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onStargateSendMessagePortalEvent(AsyncStargateSendMessagePortalEvent event) {
+        if (shouldCancelStargateSendMessagePortalEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean shouldCancelStargateSendMessagePortalEvent(StargateSendMessagePortalEvent event){
+        return event.getPortal().hasFlag(PortalFlag.SILENT);
     }
 
     @EventHandler
