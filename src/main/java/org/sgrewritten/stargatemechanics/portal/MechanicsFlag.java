@@ -3,13 +3,9 @@ package org.sgrewritten.stargatemechanics.portal;
 public enum MechanicsFlag {
 
     REDSTONE_POWERED('E',true),
-    RANDOM_WORLD('W',true),
-
     COORD('G',true),
     RANDOM_COORD('J', true),
-
     OPEN_TIMER('C', true),
-
     DESTROY_TIMER('D', true);
     
 

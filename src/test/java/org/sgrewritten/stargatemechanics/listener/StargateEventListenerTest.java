@@ -57,7 +57,7 @@ class StargateEventListenerTest {
         this.engine = new OrRedstoneEngine(stargate.getRegistry());
         this.coloringOverrideRegistry = new ColoringOverrideRegistry();
         this.languageManager = new LanguageManager(stargateMechanics,"en");
-        this.listener = new StargateEventListener(stargateMechanics,stargate.getRegistry(),engine,coloringOverrideRegistry,languageManager);
+        this.listener = new StargateEventListener(stargateMechanics,stargate,engine,coloringOverrideRegistry,languageManager);
     }
 
     @AfterEach

@@ -6,9 +6,11 @@ import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.*;
+import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ButtonUtils {
     public static void removeButtonsFromPortal(RealPortal realPortal) {
@@ -27,12 +29,16 @@ public class ButtonUtils {
     }
 
     public static void removeButtonsFromAllPortalsWithFlag(RegistryAPI registry, Character flag){
-        for(Network network : registry.getNetworkMap().values()){
+        Stream<Network> streamLocal = registry.getNetworkRegistry(StorageType.LOCAL).stream();
+        Stream<Network> streamInterserver = registry.getNetworkRegistry(StorageType.INTER_SERVER).stream();
+        Stream<Network> allNetworks = Stream.concat(streamLocal,streamInterserver);
+
+        allNetworks.forEach((network -> {
             for(Portal portal : network.getAllPortals()){
                 if(portal instanceof RealPortal realPortal && portal.hasFlag(flag)){
                     ButtonUtils.removeButtonsFromPortal(realPortal);
                 }
             }
-        }
+        }));
     }
 }

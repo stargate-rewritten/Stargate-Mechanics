@@ -4,7 +4,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargatemechanics.listener.PlayerEventListener;
 import org.sgrewritten.stargatemechanics.listener.StargateEventListener;
@@ -61,7 +60,7 @@ public class StargateMechanics extends JavaPlugin {
         }
 
         blockEventListener = new BlockEventListener(stargateAPI.getRegistry(),this, engine);
-        pluginManager.registerEvents(new StargateEventListener(this, stargateAPI.getRegistry(),engine, colorRegistry, languageManager), this);
+        pluginManager.registerEvents(new StargateEventListener(this, stargateAPI,engine, colorRegistry, languageManager), this);
         pluginManager.registerEvents(blockEventListener, this);
         pluginManager.registerEvents(new PluginEventListener(this), this);
         this.playerEventListener = new PlayerEventListener(stargateAPI,colorRegistry, this);

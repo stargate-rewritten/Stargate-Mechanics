@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.Portal;
+import org.sgrewritten.stargate.api.network.proxy.PluginMessageSender;
 import org.sgrewritten.stargate.exception.UnimplementedFlagException;
 import org.sgrewritten.stargate.exception.name.InvalidNameException;
 import org.sgrewritten.stargate.exception.name.NameConflictException;
@@ -33,12 +34,12 @@ public class NetworkMock implements Network {
     }
 
     @Override
-    public void removePortal(Portal portal, boolean b) {
+    public void removePortal(Portal portal) {
 
     }
 
     @Override
-    public void addPortal(Portal portal, boolean b) throws NameConflictException {
+    public void addPortal(Portal portal) throws NameConflictException {
 
     }
 
@@ -99,6 +100,16 @@ public class NetworkMock implements Network {
 
     @Override
     public void setID(String s) throws InvalidNameException, NameLengthException, UnimplementedFlagException {
+
+    }
+
+    @Override
+    public PluginMessageSender getPluginMessageSender() {
+        return null;
+    }
+
+    @Override
+    public void renamePortal(String s, String s1) throws InvalidNameException {
 
     }
 }

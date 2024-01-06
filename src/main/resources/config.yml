@@ -10,7 +10,6 @@ gates:
     # Configurations Needed for Stargate Mechanics G, J, & Ruined Flags/Behaviours.
 
     # If needed, should G and J gates break blocks to generate?
-    # Note that it will be impossible to specify a Y coord on a G gate if this is false.
     agressiveGateGeneration: true
 
     # When a new G or J gate is generated, what behaviour should select the gateformat?

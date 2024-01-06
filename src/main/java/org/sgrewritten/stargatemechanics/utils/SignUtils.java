@@ -6,9 +6,11 @@ import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.*;
+import org.sgrewritten.stargate.network.StorageType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class SignUtils {
     public static void removeSignsFromPortal(RealPortal portal) {
@@ -27,12 +29,15 @@ public class SignUtils {
     }
 
     public static void removeSignsFromNoSignPortals(RegistryAPI registry) {
-        for(Network network : registry.getNetworkMap().values()){
+        Stream<Network> localStream = registry.getNetworkRegistry(StorageType.LOCAL).stream();
+        Stream<Network> interserverStream = registry.getNetworkRegistry(StorageType.INTER_SERVER).stream();
+        Stream<Network> allNetworks = Stream.concat(localStream,interserverStream);
+        allNetworks.forEach(network -> {
             for(Portal portal : network.getAllPortals()){
                 if(portal instanceof RealPortal realPortal && portal.hasFlag(PortalFlag.NO_SIGN)){
                     SignUtils.removeSignsFromPortal(realPortal);
                 }
             }
-        }
+        });
     }
 }

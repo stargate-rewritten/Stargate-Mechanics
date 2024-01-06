@@ -2,6 +2,7 @@ package org.sgrewritten.stargatemechanics.mock;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +15,7 @@ import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
 import org.sgrewritten.stargatemechanics.mock.GateFormatMock;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GateMock implements GateAPI {
@@ -39,12 +41,21 @@ public class GateMock implements GateAPI {
 
     @Override
     public List<PortalPosition> getPortalPositions() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public List<BlockLocation> getLocations(GateStructureType gateStructureType) {
-        return null;
+        List<BlockVector> vectorList = switch (gateStructureType){
+            case IRIS -> List.of(new BlockVector(0,-1,1), new BlockVector(0,-2,1));
+            case FRAME -> List.of(new BlockVector(0,0,1),new BlockVector(0,-1,0), new BlockVector(0,-1,2),
+                    new BlockVector(0,-2,0), new BlockVector(0,-2,2), new BlockVector(0,-3,1));
+        };
+        List<BlockLocation> output = new ArrayList<>();
+        for(BlockVector vector : vectorList){
+            output.add(new BlockLocation(topLeft.clone().add(vector)));
+        }
+        return output;
     }
 
     @Override
@@ -89,7 +100,12 @@ public class GateMock implements GateAPI {
 
     @Override
     public Location getLocation(@NotNull Vector vector) {
-        return null;
+        return topLeft.clone().add(vector);
+    }
+
+    @Override
+    public void calculatePortalPositions(boolean b) {
+
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.network.StorageType;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
 import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
@@ -16,6 +17,7 @@ import org.sgrewritten.stargatemechanics.utils.VectorUtils;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 public class RedstoneUtils {
 
@@ -36,12 +38,16 @@ public class RedstoneUtils {
     }
 
     public static void loadPortals(RegistryAPI registry, RedstoneEngine engine){
-        for (Network network : registry.getNetworkMap().values()){
+        Stream<Network> localStream = registry.getNetworkRegistry(StorageType.LOCAL).stream();
+        Stream<Network> interserverStream = registry.getNetworkRegistry(StorageType.INTER_SERVER).stream();
+        Stream<Network> allNetworks = Stream.concat(localStream,interserverStream);
+
+        allNetworks.forEach(network -> {
             for(Portal portal : network.getAllPortals()){
                 if(portal instanceof RealPortal realPortal && portal.hasFlag(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation())){
                     RedstoneUtils.loadPortal(realPortal,engine);
                 }
             }
-        }
+        });
     }
 }

@@ -231,4 +231,9 @@ public class PortalMock implements RealPortal {
     public void activate(Player player) {
 
     }
+
+    @Override
+    public boolean isDestroyed() {
+        return false;
+    }
 }
