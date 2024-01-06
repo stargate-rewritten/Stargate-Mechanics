@@ -1,13 +1,46 @@
+### Support available at: sgrewritten.org/discord ################################ Version: @version@
+# +-,┌-.¸-┌─┬┬─┐-- . -- ,┬┬-.¸ - ,┌-.¸ --- ô -- ┌─┬┬─┐-·┌┬───┐---- ▄▄▄ - ‚——. -▄--▄-▄--▄-▄-▄▄▄▄▄-+ #
+# | ``=ı¸   ||    /\\    ||__;  |(  __¸   /\\     ||    |├--:      █▄▄▀ (“‡‡”) █▄▄▀ █▄▄▀ █   █   | #
+# | :¸_|;  ,||. ¸/¯¯)\¸ ¸||¯)\¸  \\__|; ¸/¯¯)\¸  ,||.  ,||,,,;     █▄▄█  \__/  █  █ █  █ █   █   | #
+# +--------------------------------------{OFFICIAL MODULE}---------------------------------------+ #
+# |                 __  __ ______ _____ _    _          _   _ _____ _____  _____                 | #
+# |                |  \/  |  ____/ ____| |  | |   /\   | \ | |_   _/ ____|/ ____|                | #
+# |                | \  / | |__ | |    | |__| |  /  \  |  \| | | || |    | (___                  | #
+# |                | |\/| |  __|| |    |  __  | / /\ \ | . ` | | || |     \___ \                 | #
+# |                | |  | | |___| |____| |  | |/ ____ \| |\  |_| || |____ ____) |                | #
+# |                |_|  |_|______\_____|_|  |_/_/    \_\_| \_|_____\_____|_____/                 | #
+# |______________________________________________________________________________________________| #
+# |                                  sgrewritten.org/mechanics                                   | #
+# +----------------------------------------------+-----------------------------------------------+ #
+# |    Documentation: sgrewritten.org/infoSGM    |     Bug Reports: sgrewritten.org/bugsSGM      | #
+# +----------------------------------------------+-----------------------------------------------+ #
+####################################################################################################
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                      General Preferences                                     | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# What language will this module use when communicating with your users?
+# Supported languages [en].
+#
+# If SGM isn't yet available in your language, please consider becoming a translator:
+# https://crowdin.com/project/stargate-bukkit
 locale: en
 
+# +----------------------------------------------------------------------------------------------+ #
+# |                                      General Behaviour                                       | #
+# +----------------------------------------------------------------------------------------------+ #
 gates:
+# |                                      [ Flag Toggles ]                                        | #
+# |__   Some flags may be problematic in some cases, and as such, may optionally be disabled   __| #
   flags:
-    # true is enabled
-    redstonePowered: true
-    hideNetwork: true
+    # Flags are enabled when true, and disalbed when false.
+    redstonePowered: true # The E flag.
+    hideNetwork: true # The N flag
 
+# |                                  [ Generation Behaviour ]                                    | #
+# |__       Configurations Needed for Stargate Mechanics G, J, & Ruined Flags/Behaviours.        | #
   generation:
-    # Configurations Needed for Stargate Mechanics G, J, & Ruined Flags/Behaviours.
 
     # If needed, should G and J gates break blocks to generate?
     agressiveGateGeneration: true
@@ -31,10 +64,9 @@ gates:
     #    - True [Generate a portal at the destination].
     jumpGateGenerationBehaviour: True
 
-    #What flags should be on generated (destination) J portals by default?
+    # What flags should be on generated (destination) J portals by default?
     # This setting is ignored unless jumpGateGenerationBehaviour is True.
     jumpGateDestinationFlags: 'HD{5184000}'
-
 
     #What flags should be on generated G portals by default?
     generateGateDestinationFlags: ''
@@ -52,7 +84,9 @@ gates:
       - destinationName: default
       - networkName: default
 
+# |                                           [ Debug ]                                          | #
+# |__     These settings are provided to help developers diagnose issues with this plugin.     __| #
 
-signFormatting:
-  # DISABLED, ENABLED, ADVANCED
-  dyeColoring: DISABLED
+# An internal value used by the plugin to determine how old your config is.
+# Please do not change this.
+configVersion: 3
