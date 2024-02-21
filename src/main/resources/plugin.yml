@@ -1,8 +1,8 @@
 name: StargateMechanics
 main: org.sgrewritten.stargatemechanics.StargateMechanics
-version: 0.0.1
+version: ${project.version}
 description: Mechanics addon for the Stargate plugin for Bukkit
-author: Thorinwasher
+author: EpicKnarvik97, Thorinwasher
 depend: [ Stargate ]
 api-version: 1.18
 commands:
