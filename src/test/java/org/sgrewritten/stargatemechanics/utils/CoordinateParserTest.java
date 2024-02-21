@@ -47,9 +47,9 @@ class CoordinateParserTest {
     @JsonFileSource(resources = "/coordinateExpressions.json")
     void getLocationFromExpression(JsonObject object) throws ParseException {
         Location destination = CoordinateParser.getLocationFromExpression(object.getString("expression").toUpperCase(), portal);
-        Assertions.assertEquals(destination.getBlockX(),object.getInt("x"));
-        Assertions.assertEquals(destination.getBlockY(),object.getInt("y"));
-        Assertions.assertEquals(destination.getBlockZ(),object.getInt("z"));
+        Assertions.assertEquals(object.getInt("x"),destination.getBlockX());
+        Assertions.assertEquals(object.getInt("y"),destination.getBlockY());
+        Assertions.assertEquals(object.getInt("z"),destination.getBlockZ());
     }
 
     @ParameterizedTest

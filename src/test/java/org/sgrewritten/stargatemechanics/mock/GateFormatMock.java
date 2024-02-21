@@ -3,6 +3,7 @@ package org.sgrewritten.stargatemechanics.mock;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.util.BlockVector;
+import org.bukkit.util.BoundingBox;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
 import org.sgrewritten.stargate.api.gate.structure.GateFormatStructureType;
 import org.sgrewritten.stargate.api.gate.structure.GateStructure;
@@ -63,6 +64,11 @@ public class GateFormatMock implements GateFormatAPI {
     @Override
     public int getWidth() {
         return this.width;
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return null;
     }
 
     public void setWidth(int width){

@@ -16,7 +16,6 @@ import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.exception.ParseException;
 import org.sgrewritten.stargatemechanics.locale.LanguageManager;
 import org.sgrewritten.stargatemechanics.metadata.MetaData;
-import org.sgrewritten.stargatemechanics.metadata.MetaDataReader;
 import org.sgrewritten.stargatemechanics.mock.GateMock;
 import org.sgrewritten.stargatemechanics.mock.NetworkMock;
 import org.sgrewritten.stargatemechanics.mock.PortalMock;
@@ -78,8 +77,8 @@ class StargateEventListenerTest {
         portal.addFlag(MechanicsFlag.OPEN_TIMER.getCharacterRepresentation());
         StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
         listener.onStargateCreate(event);
-        Assertions.assertEquals(coordString, MetaDataReader.getData(portal.getMetaData(), MetaData.DESTINATION_COORDS));
-        Assertions.assertEquals(timerString, MetaDataReader.getData(portal.getMetaData(), MetaData.OPEN_COUNTDOWN));
+        Assertions.assertEquals(coordString, portal.getMetadata(MetaData.DESTINATION_COORDS.name()).getAsString());
+        Assertions.assertEquals(timerString, portal.getMetadata(MetaData.OPEN_COUNTDOWN.name()).getAsString());
     }
 
     @Test

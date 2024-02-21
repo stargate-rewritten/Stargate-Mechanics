@@ -3,6 +3,7 @@ package org.sgrewritten.stargatemechanics.mock;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
@@ -144,11 +145,6 @@ public class RegistryMock implements RegistryAPI {
     }
 
     @Override
-    public @Nullable RealPortal getPortalFromPortalPosition(PortalPosition portalPosition) {
-        return null;
-    }
-
-    @Override
     public void registerNetwork(Network network) {
 
     }
@@ -156,5 +152,10 @@ public class RegistryMock implements RegistryAPI {
     @Override
     public void renameNetwork(String s, String s1, StorageType storageType) throws InvalidNameException, UnimplementedFlagException, NameLengthException {
 
+    }
+
+    @Override
+    public @NotNull Set<RealPortal> getPortalsInChunk(StargateChunk stargateChunk) {
+        return null;
     }
 }

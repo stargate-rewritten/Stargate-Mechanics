@@ -1,5 +1,6 @@
 package org.sgrewritten.stargatemechanics.listener;
 
+import com.google.gson.JsonPrimitive;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -8,12 +9,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.sgrewritten.stargate.api.StargateAPI;
-import org.sgrewritten.stargate.api.event.gate.StargateSignFormatGateEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateClosePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateListPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateOpenPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.StargateSignDyeChangePortalEvent;
+import org.sgrewritten.stargate.api.event.portal.StargateSignFormatPortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.AsyncStargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.SyncStargateSendMessagePortalEvent;
@@ -42,8 +43,6 @@ import org.sgrewritten.stargatemechanics.locale.LocalizedMessageFormatter;
 import org.sgrewritten.stargatemechanics.locale.LocalizedMessageType;
 import org.sgrewritten.stargatemechanics.locale.MessageSender;
 import org.sgrewritten.stargatemechanics.metadata.MetaData;
-import org.sgrewritten.stargatemechanics.metadata.MetaDataReader;
-import org.sgrewritten.stargatemechanics.metadata.MetaDataWriter;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
 import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
 import org.sgrewritten.stargatemechanics.signcoloring.ColorOverride;
@@ -153,11 +152,7 @@ public class StargateEventListener implements Listener {
     }
 
     private void insertMetaDataFromFlagArgument(RealPortal realPortal, MetaData metaDataType, String value) {
-        try {
-            realPortal.setMetaData(MetaDataWriter.addMetaData(metaDataType, value, realPortal.getMetaData()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        realPortal.setMetadata(new JsonPrimitive(value), metaDataType.toString());
     }
 
 
@@ -185,22 +180,16 @@ public class StargateEventListener implements Listener {
         }
         coloringOverrideRegistry.registerOverride(event.getLocation(), new ColorOverride(event.getColorChange()));
         PortalPosition portalPosition = event.getPortalPosition();
-        String previousMetaData = portalPosition.getMetaData(realPortal);
-        try {
-            String newMetaData = MetaDataWriter.addMetaData(MetaData.SIGN_COLOR, event.getColorChange().name(), previousMetaData);
-            portalPosition.setMetaData(realPortal, newMetaData);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        portalPosition.setMetadata(new JsonPrimitive(event.getColorChange().name()), MetaData.SIGN_COLOR.name());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onStargateSignFormatGateEvent(StargateSignFormatGateEvent event) {
+    public void onStargateSignFormatGateEvent(StargateSignFormatPortalEvent event) {
         ColorOverride colorOverride = coloringOverrideRegistry.getColorOverride(event.getSign().getLocation());
+        RealPortal portal = (RealPortal) event.getPortal();
         for (SignLine line : event.getLines()) {
             ColorOverrideFormatter.formatFromOverride(colorOverride, line);
             if (line.getType() == SignLineType.NETWORK) {
-                RealPortal portal = stargateAPI.getRegistry().getPortalFromPortalPosition(event.getPortalPosition());
                 if (portal.hasFlag(PortalFlag.HIDE_NETWORK)) {
                     line.getComponents().clear();
                 }
@@ -243,7 +232,7 @@ public class StargateEventListener implements Listener {
     }
 
     @EventHandler
-    public void onStargateOpenPortalEvent(StargateOpenPortalEvent event) throws ParseException {
+    public void onStargateOpenPortalEvent(StargateOpenPortalEvent event) {
         Portal portal = event.getPortal();
         if (!(portal instanceof RealPortal realPortal)) {
             return;
@@ -258,17 +247,8 @@ public class StargateEventListener implements Listener {
     }
 
     private RealPortal createGateFromFlagArguments(RealPortal realPortal) {
-        Location destinationCoordinate = null;
-        String metadata = realPortal.getMetaData();
         try {
-            if (realPortal.hasFlag(MechanicsFlag.COORD.getCharacterRepresentation())) {
-                StargateMechanics.log(Level.INFO, metadata);
-                destinationCoordinate = CoordinateParser.getLocationFromExpression(MetaDataReader.getData(metadata, MetaData.DESTINATION_COORDS), realPortal);
-            }
-            if (realPortal.hasFlag(MechanicsFlag.RANDOM_COORD.getCharacterRepresentation())) {
-                StargateMechanics.log(Level.INFO, metadata);
-                destinationCoordinate = CoordinateParser.getRandomLocationFromExpression(MetaDataReader.getData(metadata, MetaData.DESTINATION_COORDS), realPortal);
-            }
+            Location destinationCoordinate = CoordinateParser.getLocationFromPortal(realPortal);
             if (destinationCoordinate != null) {
                 Optional<String> gateFormatName = GateFormatRegistry.getAllGateFormatNames().stream().findAny();
                 if (gateFormatName.isPresent()) {
@@ -278,7 +258,10 @@ public class StargateEventListener implements Listener {
                     gateAPi.forceGenerateStructure();
                     gateAPi.calculatePortalPositions(false);
                     String flagsString = plugin.getConfig().getString(ConfigurationOption.GENERATED_GATE_FLAG_STRING.getKey());
-                    PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, Bukkit.getOfflinePlayer(realPortal.getOwnerUUID()), flagsString == null ? "" : flagsString, realPortal.getDestinationName(),gateAPi);
+                    PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, Bukkit.getOfflinePlayer(realPortal.getOwnerUUID()), realPortal.getDestinationName()).setGate(gateAPi);
+                    if(flagsString != null){
+                        portalBuilder.setFlags(flagsString);
+                    }
                     return portalBuilder.setNetwork(realPortal.getNetwork()).build();
                 }
             }

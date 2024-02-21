@@ -6,6 +6,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -88,16 +89,6 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
-    public void setMetaData(String metaData) {
-        this.metaData = metaData;
-    }
-
-    @Override
-    public String getMetaData() {
-        return metaData;
-    }
-
-    @Override
     public BlockFace getExitFacing() {
         return null;
     }
@@ -168,8 +159,8 @@ public class PortalMock implements RealPortal {
     }
 
     @Override
-    public boolean hasFlag(Character character) {
-        return flags.contains(character);
+    public boolean hasFlag(char c) {
+        return flags.contains(c);
     }
 
     @Override
@@ -235,5 +226,15 @@ public class PortalMock implements RealPortal {
     @Override
     public boolean isDestroyed() {
         return false;
+    }
+
+    @Override
+    public void setMetadata(@Nullable String s) {
+        this.metaData = s;
+    }
+
+    @Override
+    public @Nullable String getMetadata() {
+        return this.metaData;
     }
 }

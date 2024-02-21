@@ -12,7 +12,9 @@ import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargatemechanics.mock.GateFormatMock;
 
 import java.util.ArrayList;
@@ -104,6 +106,11 @@ public class GateMock implements GateAPI {
     }
 
     @Override
+    public boolean isValid() throws GateConflictException {
+        return false;
+    }
+
+    @Override
     public void calculatePortalPositions(boolean b) {
 
     }
@@ -136,5 +143,15 @@ public class GateMock implements GateAPI {
     @Override
     public void forceGenerateStructure() {
 
+    }
+
+    @Override
+    public void assignPortal(RealPortal realPortal) {
+
+    }
+
+    @Override
+    public RealPortal getPortal() {
+        return null;
     }
 }
