@@ -5,3 +5,4 @@ target/
 .classpath
 .project
 stargatemechanics.iml
+/dependency-reduced-pom.xml

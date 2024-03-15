@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.Properties;
 import java.util.logging.Level;
 
-public class LanguageManager {
+public class MechanicsLanguageManager {
 
     private final Properties defaultLocale;
     private final File pluginFolder;
@@ -16,7 +16,7 @@ public class LanguageManager {
 
     private final ChatColor prefixColor = ChatColor.of("#46634e");
 
-    public LanguageManager(StargateMechanics plugin, String language) throws IOException {
+    public MechanicsLanguageManager(StargateMechanics plugin, String language) throws IOException {
         this.properties = new Properties();
         this.defaultLocale = new Properties();
         this.plugin = plugin;

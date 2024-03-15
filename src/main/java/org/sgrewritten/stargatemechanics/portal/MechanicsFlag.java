@@ -1,28 +1,31 @@
 package org.sgrewritten.stargatemechanics.portal;
 
-public enum MechanicsFlag {
+import org.sgrewritten.stargate.api.network.portal.flag.CustomFlag;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 
-    REDSTONE_POWERED('E',true),
-    COORD('G',true),
-    RANDOM_COORD('J', true),
-    OPEN_TIMER('C', true),
-    DESTROY_TIMER('D', true);
-    
+import java.util.HashSet;
+import java.util.Set;
 
-    private final char characterRepresentation;
-    private final boolean userSpecifiable;
+public class MechanicsFlag {
 
-    private MechanicsFlag(char characterRepresentation, boolean userSpecifiable) {
-        this.characterRepresentation = characterRepresentation;
-        this.userSpecifiable = userSpecifiable;
+    private static final Set<PortalFlag> registeredFlags = new HashSet<>();
+    public static final PortalFlag REDSTONE_POWERED = registerFlag('E');
+    public static final PortalFlag COORD = registerFlag('G').modify(false, true);
+    public static final PortalFlag RANDOM_COORD = registerFlag('J').modify(false, true);
+    public static final PortalFlag OPEN_TIMER = registerFlag('C');
+    public static final PortalFlag DESTROY_TIMER = registerFlag('D');
+
+    private MechanicsFlag() {
+        throw new IllegalStateException("Utility class");
     }
 
-    public char getCharacterRepresentation(){
-        return characterRepresentation;
+    private static CustomFlag registerFlag(char character) {
+        CustomFlag portalFlag = CustomFlag.getOrCreate(character);
+        registeredFlags.add(portalFlag);
+        return portalFlag;
     }
 
-    public boolean isUserSpecifiable(){
-        return userSpecifiable;
+    public static Set<PortalFlag> values() {
+        return new HashSet<>(registeredFlags);
     }
-
 }

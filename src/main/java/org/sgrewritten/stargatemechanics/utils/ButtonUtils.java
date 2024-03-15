@@ -6,7 +6,9 @@ import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargate.api.network.portal.*;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargate.network.StorageType;
+import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,19 +28,5 @@ public class ButtonUtils {
             gate.removePortalPosition(location);
             location.getBlock().setType(Material.AIR);
         }
-    }
-
-    public static void removeButtonsFromAllPortalsWithFlag(RegistryAPI registry, Character flag){
-        Stream<Network> streamLocal = registry.getNetworkRegistry(StorageType.LOCAL).stream();
-        Stream<Network> streamInterserver = registry.getNetworkRegistry(StorageType.INTER_SERVER).stream();
-        Stream<Network> allNetworks = Stream.concat(streamLocal,streamInterserver);
-
-        allNetworks.forEach((network -> {
-            for(Portal portal : network.getAllPortals()){
-                if(portal instanceof RealPortal realPortal && portal.hasFlag(flag)){
-                    ButtonUtils.removeButtonsFromPortal(realPortal);
-                }
-            }
-        }));
     }
 }

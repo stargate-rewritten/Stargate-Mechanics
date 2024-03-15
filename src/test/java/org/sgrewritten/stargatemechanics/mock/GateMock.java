@@ -13,7 +13,8 @@ import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.PositionType;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.data.LineData;
 import org.sgrewritten.stargate.exception.GateConflictException;
 import org.sgrewritten.stargatemechanics.mock.GateFormatMock;
 
@@ -37,7 +38,12 @@ public class GateMock implements GateAPI {
     }
 
     @Override
-    public void drawControlMechanisms(SignLine[] signLines, boolean b) {
+    public void drawControlMechanisms(LineData[] lineData) {
+
+    }
+
+    @Override
+    public void redrawPosition(PortalPosition portalPosition, @Nullable LineData[] lineData) {
 
     }
 

@@ -134,7 +134,7 @@ public class OrRedstoneEngine implements RedstoneEngine{
     @Override
     public void updatePortalState(RealPortal portal){
         if(isRedstoneActive(portal)){
-            if(!portal.isOpen() && portal.getDestination() != null) {
+            if(!portal.isOpen() && portal.getBehavior().getDestination() != null) {
                 portal.open(null);
             }
         } else {

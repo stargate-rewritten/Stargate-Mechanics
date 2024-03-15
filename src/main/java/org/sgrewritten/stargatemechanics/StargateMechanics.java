@@ -5,12 +5,15 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargatemechanics.listener.PlayerEventListener;
+import org.sgrewritten.stargatemechanics.listener.PortalLoadEventListener;
 import org.sgrewritten.stargatemechanics.listener.StargateEventListener;
 import org.sgrewritten.stargatemechanics.listener.BlockEventListener;
 import org.sgrewritten.stargatemechanics.listener.PluginEventListener;
-import org.sgrewritten.stargatemechanics.locale.LanguageManager;
+import org.sgrewritten.stargatemechanics.locale.MechanicsLanguageManager;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
+import org.sgrewritten.stargatemechanics.portal.behavior.BehaviorInserter;
 import org.sgrewritten.stargatemechanics.redstone.OrRedstoneEngine;
 import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
 import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideLoader;
@@ -34,7 +37,7 @@ public class StargateMechanics extends JavaPlugin {
     private PlayerEventListener playerEventListener;
     private RedstoneEngine engine;
     private ColoringOverrideRegistry colorRegistry;
-    private LanguageManager languageManager;
+    private MechanicsLanguageManager mechanicsLanguageManager;
 
     private static final String CONFIG = "config.yml";
 
@@ -54,26 +57,23 @@ public class StargateMechanics extends JavaPlugin {
         this.colorRegistry = new ColoringOverrideRegistry();
         new ColoringOverrideLoader().load(stargateAPI.getRegistry(), colorRegistry);
         try {
-            this.languageManager = new LanguageManager(this,this.getConfig().getString(ConfigurationOption.LOCALE.getKey()));
+            this.mechanicsLanguageManager = new MechanicsLanguageManager(this,this.getConfig().getString(ConfigurationOption.LOCALE.getKey()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         blockEventListener = new BlockEventListener(stargateAPI.getRegistry(),this, engine);
-        pluginManager.registerEvents(new StargateEventListener(this, stargateAPI,engine, colorRegistry, languageManager), this);
+        pluginManager.registerEvents(new StargateEventListener(this, stargateAPI,engine, colorRegistry, mechanicsLanguageManager), this);
         pluginManager.registerEvents(blockEventListener, this);
         pluginManager.registerEvents(new PluginEventListener(this), this);
         this.playerEventListener = new PlayerEventListener(stargateAPI,colorRegistry, this);
         pluginManager.registerEvents(playerEventListener,this);
-
-        SignUtils.removeSignsFromNoSignPortals(stargateAPI.getRegistry());
-        ButtonUtils.removeButtonsFromAllPortalsWithFlag(stargateAPI.getRegistry(), MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation());
-
-
+        pluginManager.registerEvents(new PortalLoadEventListener(stargateAPI,this,mechanicsLanguageManager),this);
+        stargateAPI.getRegistry().updateAllPortals();
     }
 
     private void registerCustomFlags() {
-        for(MechanicsFlag flag : MechanicsFlag.values()){
+        for(PortalFlag flag : MechanicsFlag.values()){
             stargateAPI.getMaterialHandlerResolver().registerCustomFlag(flag.getCharacterRepresentation());
         }
     }

@@ -18,13 +18,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CoordinateParser {
-    private static Pattern RADIUS_GREATER_THAN = Pattern.compile(
+
+    private CoordinateParser(){
+        throw new IllegalStateException("Utility class");
+    }
+    private static final Pattern RADIUS_GREATER_THAN = Pattern.compile(
             "(r>)(([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?)|(([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?)(<r)");
-    private static Pattern RADIUS_LESSER_THAN = Pattern.compile(
+    private static final Pattern RADIUS_LESSER_THAN = Pattern.compile(
             "(r<)(([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?)|(([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?)(>r)");
-    private static Pattern RADIUS_EQUALS = Pattern.compile(
+    private static final Pattern RADIUS_EQUALS = Pattern.compile(
             "(r=)(([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?)|(([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?)(=r)");
-    private static Pattern INVALID_PATTERN = Pattern.compile("(>r<)|(<r>)|[^r<>=.;e0-9]");
+    private static final Pattern INVALID_PATTERN = Pattern.compile("(>r<)|(<r>)|[^r<>=.;e0-9]");
+
+    private static final Random RANDOM = new Random();
 
     public static Location getLocationFromPortal(RealPortal origin) throws ParseException {
         JsonElement element = origin.getMetadata(MetaData.DESTINATION_COORDS.name());
@@ -32,10 +38,10 @@ public class CoordinateParser {
             return null;
         }
         JsonPrimitive jsonPrimitive = element.getAsJsonPrimitive();
-        if (origin.hasFlag(MechanicsFlag.COORD.getCharacterRepresentation())) {
+        if (origin.hasFlag(MechanicsFlag.COORD)) {
             return getLocationFromExpression(jsonPrimitive.getAsString(), origin);
         }
-        if (origin.hasFlag(MechanicsFlag.RANDOM_COORD.getCharacterRepresentation())) {
+        if (origin.hasFlag(MechanicsFlag.RANDOM_COORD)) {
             return getRandomLocationFromExpression(jsonPrimitive.getAsString(), origin);
         }
         return null;
@@ -51,7 +57,7 @@ public class CoordinateParser {
             xyz = new BlockVector(topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ());
             xyz.add(origin.getGate().getFacing().getDirection().multiply(value));
         } else {
-            switch ((int) expression.chars().filter((aChar) -> aChar == ',').count()) {
+            switch ((int) expression.chars().filter(aChar -> aChar == ',').count()) {
                 case 1 -> {
                     String[] expressionSplit = coordExpression.split(",");
                     int x = parseCoord(expressionSplit[0], topLeft.getBlockX());
@@ -129,7 +135,7 @@ public class CoordinateParser {
                 radiusUpperBound = getValueFromMatch(lesserThan);
             }
             try {
-                radius = new Random().nextInt(radiusLowerBound, radiusUpperBound);
+                radius = RANDOM.nextInt(radiusLowerBound, radiusUpperBound);
             } catch (IllegalArgumentException e) {
                 throw new ParseException(e.getMessage());
             }
@@ -138,7 +144,7 @@ public class CoordinateParser {
             radius = NumberParser.parseInt(radiusExpression);
         }
         BlockVector vector = new BlockVector(radius, 0, 0);
-        vector.rotateAroundY(new Random().nextDouble(0, 2 * Math.PI));
+        vector.rotateAroundY(RANDOM.nextDouble(0, 2 * Math.PI));
 
         Location topLeft = origin.getGate().getTopLeft();
         Location location = new Location(world, topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ());
@@ -147,12 +153,11 @@ public class CoordinateParser {
     }
 
     private static Location getCompletelyRandomDestination(World world) {
-        Random random = new Random();
         WorldBorder worldBorder = world.getWorldBorder();
         int centerX = worldBorder.getCenter().getBlockX();
         int centerZ = worldBorder.getCenter().getBlockZ();
-        int x = random.nextInt((int) (centerX - worldBorder.getSize() / 2), (int) (centerX + worldBorder.getSize() / 2));
-        int z = random.nextInt((int) (centerZ - worldBorder.getSize() / 2), (int) (centerZ + worldBorder.getSize() / 2));
+        int x = RANDOM.nextInt((int) (centerX - worldBorder.getSize() / 2), (int) (centerX + worldBorder.getSize() / 2));
+        int z = RANDOM.nextInt((int) (centerZ - worldBorder.getSize() / 2), (int) (centerZ + worldBorder.getSize() / 2));
         return world.getHighestBlockAt(x, z).getLocation();
     }
 

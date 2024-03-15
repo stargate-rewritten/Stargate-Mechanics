@@ -2,8 +2,8 @@ package org.sgrewritten.stargatemechanics.signcoloring;
 
 import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.Nullable;
-import org.sgrewritten.stargate.api.network.portal.format.SignLine;
-import org.sgrewritten.stargate.api.network.portal.format.StargateComponent;
+import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
+import org.sgrewritten.stargate.api.network.portal.formatting.StargateComponent;
 
 import java.util.List;
 

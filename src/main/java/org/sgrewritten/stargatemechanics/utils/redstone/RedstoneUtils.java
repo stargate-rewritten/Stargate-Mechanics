@@ -44,7 +44,7 @@ public class RedstoneUtils {
 
         allNetworks.forEach(network -> {
             for(Portal portal : network.getAllPortals()){
-                if(portal instanceof RealPortal realPortal && portal.hasFlag(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation())){
+                if(portal instanceof RealPortal realPortal && portal.hasFlag(MechanicsFlag.REDSTONE_POWERED)){
                     RedstoneUtils.loadPortal(realPortal,engine);
                 }
             }
