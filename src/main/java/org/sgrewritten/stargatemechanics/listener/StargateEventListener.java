@@ -15,11 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.event.StargatePreCreatePortalEvent;
-import org.sgrewritten.stargate.api.event.portal.StargateClosePortalEvent;
-import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
-import org.sgrewritten.stargate.api.event.portal.StargateListPortalEvent;
-import org.sgrewritten.stargate.api.event.portal.StargateSignDyeChangePortalEvent;
-import org.sgrewritten.stargate.api.event.portal.StargateSignFormatPortalEvent;
+import org.sgrewritten.stargate.api.event.portal.*;
 import org.sgrewritten.stargate.api.event.portal.message.AsyncStargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.StargateSendMessagePortalEvent;
 import org.sgrewritten.stargate.api.event.portal.message.SyncStargateSendMessagePortalEvent;
@@ -94,18 +90,10 @@ public class StargateEventListener implements Listener {
                 MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg, List.of(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation())));
             }
         }
-        if (realPortal.hasFlag(MechanicsFlag.COORD)) {
-            if (realPortal.hasFlag(MechanicsFlag.RANDOM_COORD)) {
-                String unformattedMsg = mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INCOMPATIBLE);
-                MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg, List.of(MechanicsFlag.COORD.getCharacterRepresentation())));
-            } else {
-                insertCoordData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.COORD);
-            }
+        if (realPortal.hasFlag(MechanicsFlag.GENERATE)) {
+            insertCoordData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.GENERATE);
         }
         BehaviorInserter.insertMechanicsBehavior(realPortal, stargateAPI, plugin, mechanicsLanguageManager);
-        if (event.getPortal().hasFlag(MechanicsFlag.RANDOM_COORD)) {
-            insertCoordData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.RANDOM_COORD);
-        }
         if (event.getPortal().hasFlag(MechanicsFlag.OPEN_TIMER)) {
             insertTimerData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.OPEN_TIMER);
         }
@@ -166,15 +154,11 @@ public class StargateEventListener implements Listener {
 
     private void insertCoordData(RealPortal portal, String line, Entity entity, PortalFlag flag) {
         String value = findFlagInstructionsString(line, flag);
-
+        if (flag != MechanicsFlag.GENERATE) {
+            throw new UnsupportedOperationException();
+        }
         try {
-            if (flag == MechanicsFlag.RANDOM_COORD) {
-                CoordinateParser.getRandomLocationFromExpression(value, portal);
-            } else if (flag == MechanicsFlag.COORD) {
-                CoordinateParser.getLocationFromExpression(value, portal);
-            } else {
-                throw new UnsupportedOperationException();
-            }
+            CoordinateParser.getLocationFromPortal(portal);
             insertMetaDataFromFlagArgument(portal, MetaData.DESTINATION_COORDS, value);
         } catch (ParseException e) {
             MessageSender.sendMessage(entity, mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INVALID_ARGUMENT));

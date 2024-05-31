@@ -71,9 +71,9 @@ class StargateEventListenerTest {
                 "portal",
                 "",
                 "network",
-                MechanicsFlag.RANDOM_COORD.getCharacterRepresentation() + "{"+coordString+"}" + MechanicsFlag.OPEN_TIMER.getCharacterRepresentation() + "{" + timerString + "}"
+                MechanicsFlag.GENERATE.getCharacterRepresentation() + "{"+coordString+"}" + MechanicsFlag.OPEN_TIMER.getCharacterRepresentation() + "{" + timerString + "}"
         };
-        portal.addFlag(MechanicsFlag.RANDOM_COORD);
+        portal.addFlag(MechanicsFlag.GENERATE);
         portal.addFlag(MechanicsFlag.OPEN_TIMER);
         StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
         listener.onStargateCreate(event);
@@ -88,12 +88,12 @@ class StargateEventListenerTest {
                 "portal",
                 "",
                 "network",
-                MechanicsFlag.RANDOM_COORD.getCharacterRepresentation() + "{"+coordString+"}"
+                MechanicsFlag.GENERATE.getCharacterRepresentation() + "{"+coordString+"}"
         };
-        portal.addFlag(MechanicsFlag.RANDOM_COORD);
+        portal.addFlag(MechanicsFlag.GENERATE);
         StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
         listener.onStargateCreate(event);
-        Assertions.assertFalse(portal.hasFlag(MechanicsFlag.RANDOM_COORD));
+        Assertions.assertFalse(portal.hasFlag(MechanicsFlag.GENERATE));
     }
 
     @Test
@@ -103,13 +103,13 @@ class StargateEventListenerTest {
                 "portal",
                 "",
                 "network",
-                MechanicsFlag.COORD.getCharacterRepresentation() + "{"+coordString+"}"
+                MechanicsFlag.GENERATE.getCharacterRepresentation() + "{"+coordString+"}"
         };
-        portal.addFlag(MechanicsFlag.COORD);
+        portal.addFlag(MechanicsFlag.GENERATE);
         portal.addFlag(PortalFlag.FIXED);
         StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
         listener.onStargateCreate(event);
-        Assertions.assertFalse(portal.hasFlag(MechanicsFlag.COORD));
+        Assertions.assertFalse(portal.hasFlag(MechanicsFlag.GENERATE));
     }
 
     @Test

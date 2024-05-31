@@ -39,7 +39,7 @@ import org.sgrewritten.stargatemechanics.utils.CoordinateParser;
 
 import java.util.Optional;
 
-public class CoordBehavior extends AbstractPortalBehavior {
+public class GenerateBehavior extends AbstractPortalBehavior {
     private String destinationString;
     private final MechanicsLanguageManager mechanicsLanguageManager;
     private final StargateAPI stargateAPI;
@@ -47,7 +47,7 @@ public class CoordBehavior extends AbstractPortalBehavior {
     private static final int MAX_DEST_WIDTH = 12;
     private static final String DESTINATION = "destination";
 
-    public CoordBehavior(StargateAPI stargateAPI, StargateMechanics plugin, MechanicsLanguageManager mechanicsLanguageManager, @Nullable String destinationString) {
+    public GenerateBehavior(StargateAPI stargateAPI, StargateMechanics plugin, MechanicsLanguageManager mechanicsLanguageManager, @Nullable String destinationString) {
         super(stargateAPI.getLanguageManager());
         this.destinationString = destinationString;
         this.mechanicsLanguageManager = mechanicsLanguageManager;
@@ -103,7 +103,7 @@ public class CoordBehavior extends AbstractPortalBehavior {
 
     @Override
     public @NotNull PortalFlag getAttachedFlag() {
-        return MechanicsFlag.COORD;
+        return MechanicsFlag.GENERATE;
     }
 
     @Override

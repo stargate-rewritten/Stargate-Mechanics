@@ -13,22 +13,31 @@ import org.sgrewritten.stargatemechanics.exception.ParseException;
 import org.sgrewritten.stargatemechanics.metadata.MetaData;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CoordinateParser {
 
-    private CoordinateParser(){
+    private CoordinateParser() {
         throw new IllegalStateException("Utility class");
     }
-    private static final Pattern RADIUS_GREATER_THAN = Pattern.compile(
-            "(r>)(([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?)|(([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?)(<r)");
-    private static final Pattern RADIUS_LESSER_THAN = Pattern.compile(
-            "(r<)(([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?)|(([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?)(>r)");
-    private static final Pattern RADIUS_EQUALS = Pattern.compile(
-            "(r=)(([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?)|(([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?)(=r)");
-    private static final Pattern INVALID_PATTERN = Pattern.compile("(>r<)|(<r>)|[^r<>=.;e0-9]");
+
+    private static final String NUMBER = "([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?";
+    private static final Pattern RADIUS_GREATER_THAN = Pattern.compile("r>(" + NUMBER + ")|(" + NUMBER + ")<r", Pattern.CASE_INSENSITIVE);
+    private static final Pattern RADIUS_LESSER_THAN = Pattern.compile("r<(" + NUMBER + ")|(" + NUMBER + ")>r", Pattern.CASE_INSENSITIVE);
+    private static final Pattern RADIUS_EQUALS = Pattern.compile("r=(" + NUMBER + ")|(" + NUMBER + ")=r", Pattern.CASE_INSENSITIVE);
+    private static final Pattern INVALID_RANDOM_PATTERN = Pattern.compile("(>r<)|(<r>)|[^r<>=.;e0-9]", Pattern.CASE_INSENSITIVE);
+    private static final Pattern X_Z_PATTERN = Pattern.compile("(" + NUMBER + "),(" + NUMBER + ")");
+    private static final Pattern X_Y_Z_PATTERN = Pattern.compile("(" + NUMBER + "),(" + NUMBER + "),(" + NUMBER + ")");
+    private static final Pattern X_PATTERN = Pattern.compile("x=(" + NUMBER + ")|(" + NUMBER + ")=x", Pattern.CASE_INSENSITIVE);
+    private static final Pattern Y_PATTERN = Pattern.compile("y=(" + NUMBER + ")|(" + NUMBER + ")=y", Pattern.CASE_INSENSITIVE);
+    private static final Pattern Z_PATTERN = Pattern.compile("z=(" + NUMBER + ")|(" + NUMBER + ")=z", Pattern.CASE_INSENSITIVE);
+    private static final Pattern RELATIVE_X_Z_PATTERN = Pattern.compile("~(" + NUMBER + "),~(" + NUMBER + ")");
+    private static final Pattern RELATIVE_X_Y_Z_PATTERN = Pattern.compile("~(" + NUMBER + "),~(" + NUMBER + "),~(" + NUMBER + ")");
 
     private static final Random RANDOM = new Random();
 
@@ -38,118 +47,133 @@ public class CoordinateParser {
             return null;
         }
         JsonPrimitive jsonPrimitive = element.getAsJsonPrimitive();
-        if (origin.hasFlag(MechanicsFlag.COORD)) {
+        if (origin.hasFlag(MechanicsFlag.GENERATE)) {
             return getLocationFromExpression(jsonPrimitive.getAsString(), origin);
-        }
-        if (origin.hasFlag(MechanicsFlag.RANDOM_COORD)) {
-            return getRandomLocationFromExpression(jsonPrimitive.getAsString(), origin);
         }
         return null;
     }
 
-    public static Location getLocationFromExpression(@NotNull String expression, @NotNull RealPortal origin) throws ParseException {
-        BlockVector xyz;
-        Location topLeft = origin.getGate().getTopLeft();
-        String[] worldSeparated = expression.split(";");
-        String coordExpression = worldSeparated[0];
-        if (coordExpression.startsWith("^")) {
-            int value = NumberParser.parseInt(coordExpression.replace("\\^", ""));
-            xyz = new BlockVector(topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ());
-            xyz.add(origin.getGate().getFacing().getDirection().multiply(value));
+    static Location getLocationFromExpression(@NotNull String expression, @NotNull RealPortal origin) throws ParseException {
+        Map<CoordinateDescriptorType, String> expressionSplit = getExpressions(expression);
+        World world;
+        if (expressionSplit.containsKey(CoordinateDescriptorType.WORLD)) {
+            world = parseWorld(expressionSplit.get(CoordinateDescriptorType.WORLD));
         } else {
-            switch ((int) expression.chars().filter(aChar -> aChar == ',').count()) {
-                case 1 -> {
-                    String[] expressionSplit = coordExpression.split(",");
-                    int x = parseCoord(expressionSplit[0], topLeft.getBlockX());
-                    int z = parseCoord(expressionSplit[1], topLeft.getBlockZ());
-                    int y = topLeft.getWorld().getHighestBlockYAt(x, z);
-                    xyz = new BlockVector(x, y, z);
-                }
-                case 2 -> {
-                    String[] expressionSplit = coordExpression.split(",");
-                    int x = parseCoord(expressionSplit[0], topLeft.getBlockX());
-                    int y = parseCoord(expressionSplit[1], topLeft.getBlockY());
-                    int z = parseCoord(expressionSplit[2], topLeft.getBlockZ());
-                    xyz = new BlockVector(x, y, z);
-                }
-                default -> {
-                    int x = parseCoord(coordExpression, topLeft.getBlockX(), 'X');
-                    int z = parseCoord(coordExpression, topLeft.getBlockZ(), 'Z');
-                    int y;
-                    try {
-                        y = parseCoord(coordExpression, topLeft.getBlockY(), 'Y');
-                    } catch (IllegalArgumentException | ParseException e) {
-                        y = topLeft.getWorld().getHighestBlockYAt(x, z);
-                    }
-                    xyz = new BlockVector(x, y, z);
-                }
-            }
+            world = origin.getExit().getWorld();
         }
-        World targetWorld = parseWorld(worldSeparated, origin.getGate().getTopLeft().getWorld());
-        return new Location(targetWorld, xyz.getX(), xyz.getY(), xyz.getZ());
-    }
 
-    private static int parseCoord(String expression, int originCoord, char axis) throws ParseException {
-        String regex = axis + "=(.*?)([XYZ]|$)";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(expression);
-        if (matcher.find()) {
-            return parseCoord(matcher.group(1), originCoord);
-        } else {
-            throw new ParseException("Could not find match from pattern " + regex);
-        }
-    }
-
-    private static int parseCoord(String coordString, int originCoord) throws ParseException {
-        if (coordString.charAt(0) == '~') {
-            return originCoord + NumberParser.parseInt(coordString.replaceAll("^~", ""));
-        } else {
-            return NumberParser.parseInt(coordString);
-        }
-    }
-
-
-    public static Location getRandomLocationFromExpression(String expression, RealPortal origin) throws ParseException {
-        if (INVALID_PATTERN.matcher(expression.toLowerCase()).find()) {
-            throw new ParseException("Invalid expression");
-        }
-        String[] splitExpression = expression.toLowerCase().split(";");
-        String radiusExpression = splitExpression[0];
-        World world = parseWorld(splitExpression, origin.getGate().getTopLeft().getWorld());
-        if (radiusExpression.isBlank()) {
+        if (!expressionSplit.containsKey(CoordinateDescriptorType.NON_RANDOM) && !expressionSplit.containsKey(CoordinateDescriptorType.RANDOM)) {
             return getCompletelyRandomDestination(world);
         }
-        int radiusLowerBound = 0;
-        int radiusUpperBound = Integer.MAX_VALUE;
-        int radius = -1;
-        Matcher equals = RADIUS_EQUALS.matcher(radiusExpression);
-        if (equals.find()) {
-            radius = getValueFromMatch(equals);
+
+        BlockVector randomDelta;
+        if (expressionSplit.containsKey(CoordinateDescriptorType.RANDOM)) {
+            randomDelta = parseRandom(expressionSplit.get(CoordinateDescriptorType.RANDOM));
         } else {
-            Matcher greaterThan = RADIUS_GREATER_THAN.matcher(radiusExpression);
-            Matcher lesserThan = RADIUS_LESSER_THAN.matcher(radiusExpression);
-            if (greaterThan.find()) {
-                radiusLowerBound = getValueFromMatch(greaterThan);
-            }
-            if (lesserThan.find()) {
-                radiusUpperBound = getValueFromMatch(lesserThan);
-            }
-            try {
-                radius = RANDOM.nextInt(radiusLowerBound, radiusUpperBound);
-            } catch (IllegalArgumentException e) {
-                throw new ParseException(e.getMessage());
-            }
+            randomDelta = new BlockVector();
         }
-        if (radius == -1) {
-            radius = NumberParser.parseInt(radiusExpression);
+
+        Location destinationCenter;
+        AtomicBoolean hasDefinedY = new AtomicBoolean();
+        if (expressionSplit.containsKey(CoordinateDescriptorType.NON_RANDOM)) {
+            destinationCenter = parseDestination(expression, origin, world, hasDefinedY);
+        } else {
+            destinationCenter = origin.getGate().getTopLeft();
+        }
+        destinationCenter.add(randomDelta);
+        if (!hasDefinedY.get()) {
+            destinationCenter = world.getHighestBlockAt(destinationCenter.getBlockX(), destinationCenter.getBlockZ()).getLocation();
+        }
+        return destinationCenter;
+    }
+
+    private static Location parseDestination(String expression, RealPortal origin, World world, AtomicBoolean hasDefinedY) throws ParseException {
+        Matcher xZ = X_Z_PATTERN.matcher(expression);
+        if (xZ.matches()) {
+            double x = Double.parseDouble(xZ.group(1));
+            double z = Double.parseDouble(xZ.group(2));
+            return new Location(world, x, 0, z);
+        }
+        Matcher xYZ = X_Y_Z_PATTERN.matcher(expression);
+        if (xYZ.matches()) {
+            hasDefinedY.set(true);
+            double x = Double.parseDouble(xYZ.group(1));
+            double y = Double.parseDouble(xYZ.group(2));
+            double z = Double.parseDouble(xYZ.group(3));
+            return new Location(world, x, y, z);
+        }
+        Matcher relativeXZ = RELATIVE_X_Z_PATTERN.matcher(expression);
+        if (relativeXZ.matches()) {
+            hasDefinedY.set(true);
+            Location topLeft = origin.getGate().getTopLeft();
+            double x = topLeft.getX() + Double.parseDouble(relativeXZ.group(1));
+            double y = topLeft.getY();
+            double z = topLeft.getZ() + Double.parseDouble(relativeXZ.group(2));
+            return new Location(world, x, y, z);
+        }
+        Matcher relativeXYZ = RELATIVE_X_Y_Z_PATTERN.matcher(expression);
+        if (relativeXYZ.matches()) {
+            hasDefinedY.set(true);
+            Location topLeft = origin.getGate().getTopLeft();
+            double x = topLeft.getX() + Double.parseDouble(relativeXZ.group(1));
+            double y = topLeft.getY() + Double.parseDouble(relativeXZ.group(2));
+            double z = topLeft.getZ() + Double.parseDouble(relativeXZ.group(3));
+            return new Location(world, x, y, z);
+        }
+        Matcher xMatcher = X_PATTERN.matcher(expression);
+        if (!xMatcher.find()) {
+            throw new ParseException("Lacking x coordinate information");
+        }
+        double x = getValueFromMatch(xMatcher, 1, 2);
+        Matcher yMatcher = Y_PATTERN.matcher(expression);
+        double y;
+        if (yMatcher.find()) {
+            hasDefinedY.set(true);
+            y = getValueFromMatch(yMatcher, 1, 2);
+        } else {
+            y = 0;
+        }
+
+        Matcher zMatcher = Z_PATTERN.matcher(expression);
+        if (!zMatcher.find()) {
+            throw new ParseException("Lacking z coordinate information");
+        }
+        double z = getValueFromMatch(xMatcher, 1, 2);
+        return new Location(world, x, y, z);
+    }
+
+    private static BlockVector parseRandom(String expression) {
+        double radius;
+        Matcher radiusEquals = RADIUS_EQUALS.matcher(expression);
+        if (radiusEquals.matches()) {
+            radius = getValueFromMatch(radiusEquals, 1, 2);
+        } else {
+            Matcher radiusLesserThan = RADIUS_LESSER_THAN.matcher(expression);
+            double upperBound;
+            if (radiusLesserThan.matches()) {
+                upperBound = getValueFromMatch(radiusLesserThan, 1, 2);
+            } else {
+                upperBound = Integer.MAX_VALUE;
+            }
+
+            Matcher radiusGreaterThan = RADIUS_GREATER_THAN.matcher(expression);
+            double lowerBound;
+            if (radiusGreaterThan.matches()) {
+                lowerBound = getValueFromMatch(radiusGreaterThan, 1, 2);
+            } else {
+                lowerBound = 0;
+            }
+
+            double randomDouble = RANDOM.nextDouble(Math.sqrt(lowerBound), Math.sqrt(upperBound));
+            radius = randomDouble * randomDouble;
         }
         BlockVector vector = new BlockVector(radius, 0, 0);
         vector.rotateAroundY(RANDOM.nextDouble(0, 2 * Math.PI));
+        return vector.toBlockVector();
+    }
 
-        Location topLeft = origin.getGate().getTopLeft();
-        Location location = new Location(world, topLeft.getBlockX(), topLeft.getBlockY(), topLeft.getBlockZ());
-        location.add(vector);
-        return location.toBlockLocation();
+    private static World parseWorld(String expression) {
+        return Bukkit.getWorld(expression);
     }
 
     private static Location getCompletelyRandomDestination(World world) {
@@ -161,25 +185,75 @@ public class CoordinateParser {
         return world.getHighestBlockAt(x, z).getLocation();
     }
 
-    private static World parseWorld(String[] args, World originWorld) throws ParseException {
-        if (args.length == 2) {
-            try {
-                return Bukkit.getWorlds().get(NumberParser.parseInt(args[1]));
-            } catch (IndexOutOfBoundsException e) {
-                throw new ParseException(e.getMessage());
+    private static double getValueFromMatch(Matcher matcher, int... indices) {
+        for (int index : indices) {
+            String matchString = matcher.group(index);
+            if (matchString != null) {
+                return Double.parseDouble(matchString);
             }
-        } else if (args.length > 2) {
-            throw new ParseException("Too many ';'");
-        } else {
-            return originWorld;
         }
+        return -1;
     }
 
-    private static int getValueFromMatch(Matcher matcher) throws ParseException {
-        try {
-            return NumberParser.parseInt(matcher.group(2));
-        } catch (NullPointerException e) {
-            return NumberParser.parseInt(matcher.group(4));
+    public static boolean isRandomCoordinateDestination(RealPortal realPortal) {
+        JsonElement metaDataElement = realPortal.getMetadata(MetaData.DESTINATION_COORDS.name());
+        if (metaDataElement == null || metaDataElement.getAsString().isBlank()) {
+            return true;
         }
+        String destinationString = metaDataElement.getAsString();
+        Map<CoordinateDescriptorType, String> expressions = null;
+        try {
+            expressions = getExpressions(destinationString);
+        } catch (ParseException e) {
+            return false;
+        }
+        return expressions.containsKey(CoordinateDescriptorType.RANDOM);
+    }
+
+    private static Map<CoordinateDescriptorType, String> getExpressions(String expression) throws ParseException {
+        String[] expressions = expression.split(";");
+        if (expressions.length == 0) {
+            return Map.of();
+        }
+        Map<CoordinateDescriptorType, String> output = new EnumMap<>(CoordinateDescriptorType.class);
+        for (String subExpression : expressions) {
+            CoordinateDescriptorType coordinateDescriptorType = determineExpressionType(subExpression);
+            if(output.containsKey(coordinateDescriptorType)){
+                throw new ParseException("Sub-expressions of duplicate type");
+            }
+            output.put(coordinateDescriptorType, subExpression);
+        }
+        return output;
+    }
+
+    private static CoordinateDescriptorType determineExpressionType(String expression) throws ParseException {
+        World world = Bukkit.getWorld(expression);
+        if (world != null) {
+            return CoordinateDescriptorType.WORLD;
+        }
+        if (!INVALID_RANDOM_PATTERN.matcher(expression).find()) {
+            if (RADIUS_EQUALS.matcher(expression).matches() || RADIUS_GREATER_THAN.matcher(expression).matches() || RADIUS_LESSER_THAN.matcher(expression).matches()) {
+                return CoordinateDescriptorType.RANDOM;
+            }
+        }
+        if (X_Z_PATTERN.matcher(expression).matches() || X_Y_Z_PATTERN.matcher(expression).matches()) {
+            return CoordinateDescriptorType.NON_RANDOM;
+        }
+        if (RELATIVE_X_Z_PATTERN.matcher(expression).matches() && RELATIVE_X_Y_Z_PATTERN.matcher(expression).matches()) {
+            return CoordinateDescriptorType.NON_RANDOM;
+        }
+        Matcher x_pattern_matcher = X_PATTERN.matcher(expression);
+        Matcher y_pattern_matcher = Y_PATTERN.matcher(expression);
+        y_pattern_matcher.find(); // Optional argument / does not need to be considered
+        Matcher z_pattern_matcher = Z_PATTERN.matcher(expression);
+        if (x_pattern_matcher.find() && !x_pattern_matcher.find() && z_pattern_matcher.find() && !z_pattern_matcher.find()
+                && !y_pattern_matcher.find()) {
+            return CoordinateDescriptorType.NON_RANDOM;
+        }
+        throw new ParseException("Invalid pattern");
+    }
+
+    enum CoordinateDescriptorType {
+        RANDOM, NON_RANDOM, WORLD;
     }
 }

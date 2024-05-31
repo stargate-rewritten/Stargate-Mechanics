@@ -10,8 +10,7 @@ public class MechanicsFlag {
 
     private static final Set<PortalFlag> registeredFlags = new HashSet<>();
     public static final PortalFlag REDSTONE_POWERED = registerFlag('E');
-    public static final PortalFlag COORD = registerFlag('G').modify(false, true);
-    public static final PortalFlag RANDOM_COORD = registerFlag('J').modify(false, true);
+    public static final PortalFlag GENERATE = registerFlag('G').modify(false, true);
     public static final PortalFlag OPEN_TIMER = registerFlag('C');
     public static final PortalFlag DESTROY_TIMER = registerFlag('D');
 
