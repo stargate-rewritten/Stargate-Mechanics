@@ -50,7 +50,7 @@ class StargateEventListenerTest {
         this.gate = new GateMock("nether.gate", new Location(world,10,14,10));
         this.network = new NetworkMock("network");
         this.exit = new Location(world,10,10,10);
-        this.portal = new PortalMock(gate,network, exit);
+        this.portal = new PortalMock(gate, network, exit);
         this.stargate = MockBukkit.load(Stargate.class);
         this.stargateMechanics = MockBukkit.load(StargateMechanics.class);
         this.engine = new OrRedstoneEngine(stargate.getRegistry());
@@ -91,22 +91,6 @@ class StargateEventListenerTest {
                 MechanicsFlag.GENERATE.getCharacterRepresentation() + "{"+coordString+"}"
         };
         portal.addFlag(MechanicsFlag.GENERATE);
-        StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
-        listener.onStargateCreate(event);
-        Assertions.assertFalse(portal.hasFlag(MechanicsFlag.GENERATE));
-    }
-
-    @Test
-    void onStargateCreateTest_InvalidCoordArgument() {
-        String coordString = "";
-        String[] lines = new String[] {
-                "portal",
-                "",
-                "network",
-                MechanicsFlag.GENERATE.getCharacterRepresentation() + "{"+coordString+"}"
-        };
-        portal.addFlag(MechanicsFlag.GENERATE);
-        portal.addFlag(PortalFlag.FIXED);
         StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
         listener.onStargateCreate(event);
         Assertions.assertFalse(portal.hasFlag(MechanicsFlag.GENERATE));

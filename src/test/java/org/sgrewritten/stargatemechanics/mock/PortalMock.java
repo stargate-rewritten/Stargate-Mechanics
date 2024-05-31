@@ -48,6 +48,7 @@ public class PortalMock implements RealPortal {
         this.network = network;
         this.ownerUUID = ownerUUID;
         this.exit = exit;
+        this.behavior = new MockBehavior();
     }
 
     @Override
@@ -172,7 +173,7 @@ public class PortalMock implements RealPortal {
 
     @Override
     public boolean hasFlag(PortalFlag portalFlag) {
-        return flags.contains(portalFlag.getCharacterRepresentation());
+        return flags.contains(portalFlag);
     }
 
 

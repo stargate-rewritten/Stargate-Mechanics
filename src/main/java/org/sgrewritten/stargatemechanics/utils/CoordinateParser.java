@@ -30,7 +30,8 @@ public class CoordinateParser {
     private static final Pattern RADIUS_GREATER_THAN = Pattern.compile("r>(" + NUMBER + ")|(" + NUMBER + ")<r", Pattern.CASE_INSENSITIVE);
     private static final Pattern RADIUS_LESSER_THAN = Pattern.compile("r<(" + NUMBER + ")|(" + NUMBER + ")>r", Pattern.CASE_INSENSITIVE);
     private static final Pattern RADIUS_EQUALS = Pattern.compile("r=(" + NUMBER + ")|(" + NUMBER + ")=r", Pattern.CASE_INSENSITIVE);
-    private static final Pattern INVALID_RANDOM_PATTERN = Pattern.compile("(>r<)|(<r>)|[^r<>=.;e0-9]", Pattern.CASE_INSENSITIVE);
+    private static final Pattern INVALID_RANDOM_PATTERN = Pattern.compile("(>r<)|(<r>)|[^r<>=.e0-9]", Pattern.CASE_INSENSITIVE);
+    private static final Pattern INVALID_DEST_PATTERN = Pattern.compile("[^=.,~e0-9xyz]", Pattern.CASE_INSENSITIVE);
     private static final Pattern X_Z_PATTERN = Pattern.compile("(" + NUMBER + "),(" + NUMBER + ")");
     private static final Pattern X_Y_Z_PATTERN = Pattern.compile("(" + NUMBER + "),(" + NUMBER + "),(" + NUMBER + ")");
     private static final Pattern X_PATTERN = Pattern.compile("x=(" + NUMBER + ")|(" + NUMBER + ")=x", Pattern.CASE_INSENSITIVE);
@@ -53,7 +54,7 @@ public class CoordinateParser {
         return null;
     }
 
-    static Location getLocationFromExpression(@NotNull String expression, @NotNull RealPortal origin) throws ParseException {
+    public static Location getLocationFromExpression(@NotNull String expression, @NotNull RealPortal origin) throws ParseException {
         Map<CoordinateDescriptorType, String> expressionSplit = getExpressions(expression);
         World world;
         if (expressionSplit.containsKey(CoordinateDescriptorType.WORLD)) {
@@ -237,6 +238,9 @@ public class CoordinateParser {
             if (RADIUS_EQUALS.matcher(expression).matches() || RADIUS_GREATER_THAN.matcher(expression).find() || RADIUS_LESSER_THAN.matcher(expression).find()) {
                 return CoordinateDescriptorType.RANDOM;
             }
+        }
+        if(INVALID_DEST_PATTERN.matcher(expression).find()){
+            throw new ParseException("Illegal chars, or non existing world");
         }
         if (X_Z_PATTERN.matcher(expression).matches() || X_Y_Z_PATTERN.matcher(expression).matches()) {
             return CoordinateDescriptorType.NON_RANDOM;

@@ -158,7 +158,7 @@ public class StargateEventListener implements Listener {
             throw new UnsupportedOperationException();
         }
         try {
-            CoordinateParser.getLocationFromPortal(portal);
+            CoordinateParser.getLocationFromExpression(value, portal);
             insertMetaDataFromFlagArgument(portal, MetaData.DESTINATION_COORDS, value);
         } catch (ParseException e) {
             MessageSender.sendMessage(entity, mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INVALID_ARGUMENT));
