@@ -1,8 +1,5 @@
 [
   {
-    "expression" : "10"
-  },
-  {
     "expression" : "1<r<2"
   },
   {
@@ -33,7 +30,7 @@
     "expression" : "r>1e4"
   },
   {
-    "expression" : "r=3;0"
+    "expression" : "r=3;world"
   },
   {
     "expression" : ""

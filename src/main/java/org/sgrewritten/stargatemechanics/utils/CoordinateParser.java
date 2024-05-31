@@ -91,15 +91,15 @@ public class CoordinateParser {
         Matcher xZ = X_Z_PATTERN.matcher(expression);
         if (xZ.matches()) {
             double x = Double.parseDouble(xZ.group(1));
-            double z = Double.parseDouble(xZ.group(2));
+            double z = Double.parseDouble(xZ.group(3));
             return new Location(world, x, 0, z);
         }
         Matcher xYZ = X_Y_Z_PATTERN.matcher(expression);
         if (xYZ.matches()) {
             hasDefinedY.set(true);
             double x = Double.parseDouble(xYZ.group(1));
-            double y = Double.parseDouble(xYZ.group(2));
-            double z = Double.parseDouble(xYZ.group(3));
+            double y = Double.parseDouble(xYZ.group(3));
+            double z = Double.parseDouble(xYZ.group(5));
             return new Location(world, x, y, z);
         }
         Matcher relativeXZ = RELATIVE_X_Z_PATTERN.matcher(expression);
@@ -108,28 +108,28 @@ public class CoordinateParser {
             Location topLeft = origin.getGate().getTopLeft();
             double x = topLeft.getX() + Double.parseDouble(relativeXZ.group(1));
             double y = topLeft.getY();
-            double z = topLeft.getZ() + Double.parseDouble(relativeXZ.group(2));
+            double z = topLeft.getZ() + Double.parseDouble(relativeXZ.group(3));
             return new Location(world, x, y, z);
         }
         Matcher relativeXYZ = RELATIVE_X_Y_Z_PATTERN.matcher(expression);
         if (relativeXYZ.matches()) {
             hasDefinedY.set(true);
             Location topLeft = origin.getGate().getTopLeft();
-            double x = topLeft.getX() + Double.parseDouble(relativeXZ.group(1));
-            double y = topLeft.getY() + Double.parseDouble(relativeXZ.group(2));
-            double z = topLeft.getZ() + Double.parseDouble(relativeXZ.group(3));
+            double x = topLeft.getX() + Double.parseDouble(relativeXYZ.group(1));
+            double y = topLeft.getY() + Double.parseDouble(relativeXYZ.group(3));
+            double z = topLeft.getZ() + Double.parseDouble(relativeXYZ.group(5));
             return new Location(world, x, y, z);
         }
         Matcher xMatcher = X_PATTERN.matcher(expression);
         if (!xMatcher.find()) {
             throw new ParseException("Lacking x coordinate information");
         }
-        double x = getValueFromMatch(xMatcher, 1, 2);
+        double x = getValueFromMatch(xMatcher, 1, 3);
         Matcher yMatcher = Y_PATTERN.matcher(expression);
         double y;
         if (yMatcher.find()) {
             hasDefinedY.set(true);
-            y = getValueFromMatch(yMatcher, 1, 2);
+            y = getValueFromMatch(yMatcher, 1, 3);
         } else {
             y = 0;
         }
@@ -138,33 +138,35 @@ public class CoordinateParser {
         if (!zMatcher.find()) {
             throw new ParseException("Lacking z coordinate information");
         }
-        double z = getValueFromMatch(xMatcher, 1, 2);
+        double z = getValueFromMatch(zMatcher, 1, 3);
         return new Location(world, x, y, z);
     }
 
-    private static BlockVector parseRandom(String expression) {
+    private static BlockVector parseRandom(String expression) throws ParseException {
         double radius;
         Matcher radiusEquals = RADIUS_EQUALS.matcher(expression);
         if (radiusEquals.matches()) {
-            radius = getValueFromMatch(radiusEquals, 1, 2);
+            radius = getValueFromMatch(radiusEquals, 1, 3);
         } else {
             Matcher radiusLesserThan = RADIUS_LESSER_THAN.matcher(expression);
             double upperBound;
-            if (radiusLesserThan.matches()) {
-                upperBound = getValueFromMatch(radiusLesserThan, 1, 2);
+            if (radiusLesserThan.find()) {
+                upperBound = getValueFromMatch(radiusLesserThan, 1, 3);
             } else {
                 upperBound = Integer.MAX_VALUE;
             }
 
             Matcher radiusGreaterThan = RADIUS_GREATER_THAN.matcher(expression);
             double lowerBound;
-            if (radiusGreaterThan.matches()) {
-                lowerBound = getValueFromMatch(radiusGreaterThan, 1, 2);
+            if (radiusGreaterThan.find()) {
+                lowerBound = getValueFromMatch(radiusGreaterThan, 1, 3);
             } else {
                 lowerBound = 0;
             }
-
-            double randomDouble = RANDOM.nextDouble(Math.sqrt(lowerBound), Math.sqrt(upperBound));
+            if (lowerBound >= upperBound) {
+                throw new ParseException("Upperbound lesser or equal to lowerbound");
+            }
+            double randomDouble = RANDOM.nextDouble(lowerBound == 0 ? 0 : Math.sqrt(lowerBound), Math.sqrt(upperBound));
             radius = randomDouble * randomDouble;
         }
         BlockVector vector = new BlockVector(radius, 0, 0);
@@ -185,14 +187,14 @@ public class CoordinateParser {
         return world.getHighestBlockAt(x, z).getLocation();
     }
 
-    private static double getValueFromMatch(Matcher matcher, int... indices) {
+    private static double getValueFromMatch(Matcher matcher, int... indices) throws ParseException {
         for (int index : indices) {
             String matchString = matcher.group(index);
             if (matchString != null) {
                 return Double.parseDouble(matchString);
             }
         }
-        return -1;
+        throw new ParseException("No match");
     }
 
     public static boolean isRandomCoordinateDestination(RealPortal realPortal) {
@@ -212,13 +214,13 @@ public class CoordinateParser {
 
     private static Map<CoordinateDescriptorType, String> getExpressions(String expression) throws ParseException {
         String[] expressions = expression.split(";");
-        if (expressions.length == 0) {
+        if (expressions.length == 1 && expressions[0].isBlank()) {
             return Map.of();
         }
         Map<CoordinateDescriptorType, String> output = new EnumMap<>(CoordinateDescriptorType.class);
         for (String subExpression : expressions) {
             CoordinateDescriptorType coordinateDescriptorType = determineExpressionType(subExpression);
-            if(output.containsKey(coordinateDescriptorType)){
+            if (output.containsKey(coordinateDescriptorType)) {
                 throw new ParseException("Sub-expressions of duplicate type");
             }
             output.put(coordinateDescriptorType, subExpression);
@@ -232,14 +234,14 @@ public class CoordinateParser {
             return CoordinateDescriptorType.WORLD;
         }
         if (!INVALID_RANDOM_PATTERN.matcher(expression).find()) {
-            if (RADIUS_EQUALS.matcher(expression).matches() || RADIUS_GREATER_THAN.matcher(expression).matches() || RADIUS_LESSER_THAN.matcher(expression).matches()) {
+            if (RADIUS_EQUALS.matcher(expression).matches() || RADIUS_GREATER_THAN.matcher(expression).find() || RADIUS_LESSER_THAN.matcher(expression).find()) {
                 return CoordinateDescriptorType.RANDOM;
             }
         }
         if (X_Z_PATTERN.matcher(expression).matches() || X_Y_Z_PATTERN.matcher(expression).matches()) {
             return CoordinateDescriptorType.NON_RANDOM;
         }
-        if (RELATIVE_X_Z_PATTERN.matcher(expression).matches() && RELATIVE_X_Y_Z_PATTERN.matcher(expression).matches()) {
+        if (RELATIVE_X_Z_PATTERN.matcher(expression).matches() || RELATIVE_X_Y_Z_PATTERN.matcher(expression).matches()) {
             return CoordinateDescriptorType.NON_RANDOM;
         }
         Matcher x_pattern_matcher = X_PATTERN.matcher(expression);

@@ -30,8 +30,7 @@ class CoordinateParserTest {
     @BeforeEach
     void setUp(){
         this.server = MockBukkit.mock();
-        this.world = new WorldMock(Material.GRASS_BLOCK, 3);
-        server.addWorld(world);
+        world = server.addSimpleWorld("world");
         this.gate = new GateMock("nether.gate", BlockFace.NORTH, new Location(world, 10, 5, 10));
         this.network = new NetworkMock("network");
         this.exit = new Location(world,10,10,10);
