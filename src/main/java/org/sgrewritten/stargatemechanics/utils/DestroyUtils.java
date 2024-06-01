@@ -2,11 +2,19 @@ package org.sgrewritten.stargatemechanics.utils;
 
 import com.google.gson.JsonElement;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
+import org.sgrewritten.stargate.api.gate.GateAPI;
+import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.NetworkManager;
+import org.sgrewritten.stargate.api.network.portal.BlockLocation;
+import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargatemechanics.metadata.MetaData;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
+
+import java.util.List;
 
 public class DestroyUtils {
 
@@ -23,9 +31,19 @@ public class DestroyUtils {
         long currTimeMillis = System.currentTimeMillis();
         long timeToDestroyMillis = destroyTimeMillis - currTimeMillis;
         if (timeToDestroyMillis <= 0) {
-            networkManager.destroyPortal(realPortal);
+            destroy(realPortal, networkManager);
             return;
         }
-        Bukkit.getScheduler().runTaskLater(plugin, () -> networkManager.destroyPortal(realPortal), timeToDestroyMillis * 50);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> destroy(realPortal, networkManager), timeToDestroyMillis * 50);
+    }
+
+    private static void destroy(RealPortal portal, NetworkManager networkManager){
+        networkManager.destroyPortal(portal);
+        GateAPI gateAPI = portal.getGate();
+        Material closedType = gateAPI.getFormat().getIrisMaterial(false);
+        List<BlockLocation> frameLocations = gateAPI.getLocations(GateStructureType.FRAME);
+        frameLocations.stream().map(BlockLocation::getLocation).forEach(location -> location.getBlock().setType(closedType));
+        gateAPI.getPortalPositions().stream().map(PortalPosition::getRelativePositionLocation).map(gateAPI::getLocation)
+                .map(Location::getBlock).forEach(block -> block.setType(closedType));
     }
 }
