@@ -31,19 +31,22 @@ public class DestroyUtils {
         long currTimeMillis = System.currentTimeMillis();
         long timeToDestroyMillis = destroyTimeMillis - currTimeMillis;
         if (timeToDestroyMillis <= 0) {
-            destroy(realPortal, networkManager);
+            destroy(realPortal, networkManager, plugin);
             return;
         }
-        Bukkit.getScheduler().runTaskLater(plugin, () -> destroy(realPortal, networkManager), timeToDestroyMillis * 50);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> destroy(realPortal, networkManager, plugin), timeToDestroyMillis * 50);
     }
 
-    private static void destroy(RealPortal portal, NetworkManager networkManager){
+    private static void destroy(RealPortal portal, NetworkManager networkManager, Plugin plugin){
         networkManager.destroyPortal(portal);
-        GateAPI gateAPI = portal.getGate();
-        Material closedType = gateAPI.getFormat().getIrisMaterial(false);
-        List<BlockLocation> frameLocations = gateAPI.getLocations(GateStructureType.FRAME);
-        frameLocations.stream().map(BlockLocation::getLocation).forEach(location -> location.getBlock().setType(closedType));
-        gateAPI.getPortalPositions().stream().map(PortalPosition::getRelativePositionLocation).map(gateAPI::getLocation)
-                .map(Location::getBlock).forEach(block -> block.setType(closedType));
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            GateAPI gateAPI = portal.getGate();
+            Material closedType = gateAPI.getFormat().getIrisMaterial(false);
+            List<BlockLocation> frameLocations = gateAPI.getLocations(GateStructureType.FRAME);
+            frameLocations.stream().map(BlockLocation::getLocation).forEach(location -> location.getBlock().setType(closedType));
+            gateAPI.getPortalPositions().stream().map(PortalPosition::getRelativePositionLocation).map(gateAPI::getLocation)
+                    .map(Location::getBlock).forEach(block -> block.setType(closedType));
+        },10);
+
     }
 }

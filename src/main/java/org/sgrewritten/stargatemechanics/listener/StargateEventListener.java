@@ -177,7 +177,7 @@ public class StargateEventListener implements Listener {
         try {
             long time = TimeParser.parseTime(value);
             if (MechanicsFlag.DESTROY_TIMER == flag) {
-                portal.setMetadata(new JsonPrimitive(time), MetaData.DESTROY_TIME.name());
+                portal.setMetadata(new JsonPrimitive(time + System.currentTimeMillis()), MetaData.DESTROY_TIME.name());
             } else if (MechanicsFlag.OPEN_TIMER == flag) {
                 insertMetaDataFromFlagArgument(portal, MetaData.OPEN_COUNTDOWN, value);
             } else {
