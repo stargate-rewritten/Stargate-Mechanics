@@ -40,6 +40,7 @@ import org.sgrewritten.stargatemechanics.locale.MessageSender;
 import org.sgrewritten.stargatemechanics.metadata.MetaData;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
 import org.sgrewritten.stargatemechanics.portal.behavior.BehaviorInserter;
+import org.sgrewritten.stargatemechanics.portal.behavior.GenerateBehavior;
 import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
 import org.sgrewritten.stargatemechanics.signcoloring.ColorOverride;
 import org.sgrewritten.stargatemechanics.signcoloring.ColorOverrideFormatter;
@@ -253,6 +254,13 @@ public class StargateEventListener implements Listener {
     public void onStargateSendMessagePortalEvent(AsyncStargateSendMessagePortalEvent event) {
         if (shouldCancelStargateSendMessagePortalEvent(event)) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onStargateTeleportEvent(StargateTeleportPortalEvent event) {
+        if (event.getPortal() instanceof RealPortal realPortal && realPortal.getBehavior() instanceof GenerateBehavior generateBehavior) {
+            generateBehavior.onEnter();
         }
     }
 

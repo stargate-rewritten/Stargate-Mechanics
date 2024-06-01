@@ -17,7 +17,7 @@ public class BehaviorInserter {
         String previousDestination = realPortal.getBehavior().getDestinationName();
         if (realPortal.hasFlag(MechanicsFlag.GENERATE)) {
             boolean isRandomDestination = CoordinateParser.isRandomCoordinateDestination(realPortal);
-            realPortal.setBehavior(new GenerateBehavior(stargateAPI, plugin, mechanicsLanguageManager, previousDestination));
+            realPortal.setBehavior(new GenerateBehavior(stargateAPI, plugin, mechanicsLanguageManager, previousDestination, isRandomDestination));
         }
     }
 }

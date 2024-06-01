@@ -40,6 +40,8 @@ import org.sgrewritten.stargatemechanics.utils.CoordinateParser;
 import java.util.Optional;
 
 public class GenerateBehavior extends AbstractPortalBehavior {
+    private final boolean randomCoordinate;
+    private final boolean generateName;
     private String destinationString;
     private final MechanicsLanguageManager mechanicsLanguageManager;
     private final StargateAPI stargateAPI;
@@ -47,12 +49,14 @@ public class GenerateBehavior extends AbstractPortalBehavior {
     private static final int MAX_DEST_WIDTH = 12;
     private static final String DESTINATION = "destination";
 
-    public GenerateBehavior(StargateAPI stargateAPI, StargateMechanics plugin, MechanicsLanguageManager mechanicsLanguageManager, @Nullable String destinationString) {
+    public GenerateBehavior(StargateAPI stargateAPI, StargateMechanics plugin, MechanicsLanguageManager mechanicsLanguageManager, @Nullable String destinationString, boolean isRandomDestination) {
         super(stargateAPI.getLanguageManager());
         this.destinationString = destinationString;
         this.mechanicsLanguageManager = mechanicsLanguageManager;
         this.stargateAPI = stargateAPI;
         this.plugin = plugin;
+        this.randomCoordinate = isRandomDestination;
+        this.generateName = destinationString == null;
     }
 
     @Override
@@ -95,10 +99,20 @@ public class GenerateBehavior extends AbstractPortalBehavior {
 
     @Override
     public void onButtonClick(PlayerInteractEvent event) {
-        if (getDestination() == null) {
+        if (getDestination() == null || randomCoordinate) {
+            if (getDestination() != null && getDestination() instanceof RealPortal destinationPortal && !generateName) {
+                stargateAPI.getNetworkManager().destroyPortal(destinationPortal);
+            }
             createGateFromFlagArguments(super.portal);
         }
         super.onButtonClick(event);
+    }
+
+    public void onEnter() {
+        if (randomCoordinate && generateName) {
+            destinationString = null;
+            portal.redrawSigns();
+        }
     }
 
     @Override
@@ -112,11 +126,11 @@ public class GenerateBehavior extends AbstractPortalBehavior {
     }
 
     @Override
-    public void assignPortal(@NotNull RealPortal portal){
+    public void assignPortal(@NotNull RealPortal portal) {
         super.assignPortal(portal);
-        if(destinationString == null){
+        if (destinationString == null) {
             JsonElement destinationData = portal.getMetadata(DESTINATION);
-            if(destinationData != null){
+            if (destinationData != null) {
                 this.destinationString = destinationData.getAsString();
             }
         }
@@ -144,7 +158,7 @@ public class GenerateBehavior extends AbstractPortalBehavior {
                     }
                     portalBuilder.setDestination(realPortal.getId());
                     portalBuilder.setNetwork(realPortal.getNetwork()).build();
-                    if(destinationString == null) {
+                    if (generateName) {
                         realPortal.setMetadata(new JsonPrimitive(destinationName), DESTINATION);
                         this.destinationString = destinationName;
                         portal.redrawSigns();
@@ -158,7 +172,7 @@ public class GenerateBehavior extends AbstractPortalBehavior {
     }
 
     private @Nullable String getDestinationName(@NotNull RealPortal realPortal, @NotNull Location destinationLocation) {
-        if (getDestinationName() == null) {
+        if (generateName) {
             return getDestinationNameFromBiome(destinationLocation.getBlock().getComputedBiome(), realPortal.getNetwork());
         } else {
             return getDestinationName();
