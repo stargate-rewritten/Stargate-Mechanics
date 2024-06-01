@@ -90,10 +90,9 @@ public class StargateEventListener implements Listener {
                 MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg, List.of(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation())));
             }
         }
-        if (realPortal.hasFlag(MechanicsFlag.GENERATE)) {
-            insertCoordData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.GENERATE);
+        if (realPortal.hasFlag(MechanicsFlag.GENERATE) && insertCoordData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.GENERATE)) {
+            BehaviorInserter.insertMechanicsBehavior(realPortal, stargateAPI, plugin, mechanicsLanguageManager);
         }
-        BehaviorInserter.insertMechanicsBehavior(realPortal, stargateAPI, plugin, mechanicsLanguageManager);
         if (event.getPortal().hasFlag(MechanicsFlag.OPEN_TIMER)) {
             insertTimerData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.OPEN_TIMER);
         }
@@ -152,7 +151,7 @@ public class StargateEventListener implements Listener {
         builder.open(activator);
     }
 
-    private void insertCoordData(RealPortal portal, String line, Entity entity, PortalFlag flag) {
+    private boolean insertCoordData(RealPortal portal, String line, Entity entity, PortalFlag flag) {
         String value = findFlagInstructionsString(line, flag);
         if (flag != MechanicsFlag.GENERATE) {
             throw new UnsupportedOperationException();
@@ -162,8 +161,9 @@ public class StargateEventListener implements Listener {
             insertMetaDataFromFlagArgument(portal, MetaData.DESTINATION_COORDS, value);
         } catch (ParseException e) {
             MessageSender.sendMessage(entity, mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INVALID_ARGUMENT));
-            portal.removeFlag(flag);
+            return false;
         }
+        return true;
     }
 
     private void insertTimerData(RealPortal portal, String line, Entity entity, PortalFlag flag) {
