@@ -102,7 +102,7 @@ public class GenerateBehavior extends AbstractPortalBehavior {
 
     @Override
     public void onButtonClick(PlayerInteractEvent event) {
-        if (getDestination() == null || randomCoordinate) {
+        if (getDestination() == null) {
             if (getDestination() != null && getDestination() instanceof RealPortal destinationPortal && !generateName) {
                 stargateAPI.getNetworkManager().destroyPortal(destinationPortal);
             }
