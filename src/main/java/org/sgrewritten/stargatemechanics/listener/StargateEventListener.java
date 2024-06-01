@@ -23,6 +23,7 @@ import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.Portal;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargate.api.network.portal.behavior.PortalBehavior;
 import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
 import org.sgrewritten.stargate.api.network.portal.formatting.SignLine;
 import org.sgrewritten.stargate.api.network.portal.formatting.SignLineType;
@@ -91,8 +92,14 @@ public class StargateEventListener implements Listener {
                 MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg, List.of(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation())));
             }
         }
-        if (realPortal.hasFlag(MechanicsFlag.GENERATE) && insertCoordData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.GENERATE)) {
-            BehaviorInserter.insertMechanicsBehavior(realPortal, stargateAPI, plugin, mechanicsLanguageManager);
+        if (realPortal.hasFlag(MechanicsFlag.GENERATE)) {
+            PortalBehavior previousBehavior = realPortal.getBehavior();
+            if (insertCoordData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.GENERATE)) {
+                BehaviorInserter.insertMechanicsBehavior(realPortal, stargateAPI, plugin, mechanicsLanguageManager);
+            } else {
+                // Will clear custom behavior flags
+                realPortal.setBehavior(previousBehavior);
+            }
         }
         if (event.getPortal().hasFlag(MechanicsFlag.OPEN_TIMER)) {
             insertTimerData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.OPEN_TIMER);
