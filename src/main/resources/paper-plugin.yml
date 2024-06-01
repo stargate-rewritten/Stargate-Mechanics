@@ -1,0 +1,12 @@
+name: StargateMechanics
+main: org.sgrewritten.stargatemechanics.StargateMechanics
+version: ${project.version}
+description: A gameplay module for Stargate Rewritten providing intuition exceptions (mostly new flags and portal types) 
+author: EpicKnarvik97, Thorinwasher
+dependencies:
+  server:
+    Stargate:
+      load: BEFORE
+      required: true
+      join-classpath: true
+api-version: 1.20
