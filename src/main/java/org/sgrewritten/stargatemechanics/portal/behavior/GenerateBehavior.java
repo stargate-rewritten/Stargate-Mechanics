@@ -42,6 +42,7 @@ import java.util.Optional;
 public class GenerateBehavior extends AbstractPortalBehavior {
     private final boolean randomCoordinate;
     private final boolean generateName;
+    private final String generatedPortalFlagString;
     private String destinationString;
     private final MechanicsLanguageManager mechanicsLanguageManager;
     private final StargateAPI stargateAPI;
@@ -49,7 +50,7 @@ public class GenerateBehavior extends AbstractPortalBehavior {
     private static final int MAX_DEST_WIDTH = 12;
     private static final String DESTINATION = "destination";
 
-    public GenerateBehavior(StargateAPI stargateAPI, StargateMechanics plugin, MechanicsLanguageManager mechanicsLanguageManager, @Nullable String destinationString, boolean isRandomDestination) {
+    public GenerateBehavior(StargateAPI stargateAPI, StargateMechanics plugin, MechanicsLanguageManager mechanicsLanguageManager, @Nullable String destinationString, boolean isRandomDestination, String generatedPortalFlagString) {
         super(stargateAPI.getLanguageManager());
         this.destinationString = destinationString;
         this.mechanicsLanguageManager = mechanicsLanguageManager;
@@ -57,6 +58,7 @@ public class GenerateBehavior extends AbstractPortalBehavior {
         this.plugin = plugin;
         this.randomCoordinate = isRandomDestination;
         this.generateName = destinationString == null;
+        this.generatedPortalFlagString = generatedPortalFlagString;
     }
 
     @Override
@@ -158,6 +160,9 @@ public class GenerateBehavior extends AbstractPortalBehavior {
                     }
                     portalBuilder.setDestination(realPortal.getId());
                     portalBuilder.setNetwork(realPortal.getNetwork()).build();
+                    if (generatedPortalFlagString != null) {
+                        portalBuilder.setFlags(generatedPortalFlagString);
+                    }
                     if (generateName) {
                         realPortal.setMetadata(new JsonPrimitive(destinationName), DESTINATION);
                         this.destinationString = destinationName;
