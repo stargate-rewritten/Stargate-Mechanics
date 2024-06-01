@@ -46,10 +46,7 @@ import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
 import org.sgrewritten.stargatemechanics.signcoloring.ColorOverride;
 import org.sgrewritten.stargatemechanics.signcoloring.ColorOverrideFormatter;
 import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideRegistry;
-import org.sgrewritten.stargatemechanics.utils.ButtonUtils;
-import org.sgrewritten.stargatemechanics.utils.CoordinateParser;
-import org.sgrewritten.stargatemechanics.utils.SignUtils;
-import org.sgrewritten.stargatemechanics.utils.TimeParser;
+import org.sgrewritten.stargatemechanics.utils.*;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
 
 import java.util.Collections;
@@ -107,7 +104,7 @@ public class StargateEventListener implements Listener {
         if (event.getPortal().hasFlag(MechanicsFlag.DESTROY_TIMER)) {
             insertTimerData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.DESTROY_TIMER);
         }
-
+        DestroyUtils.register(realPortal, stargateAPI.getNetworkManager(), plugin);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -178,9 +175,9 @@ public class StargateEventListener implements Listener {
     private void insertTimerData(RealPortal portal, String line, Entity entity, PortalFlag flag) {
         String value = findFlagInstructionsString(line, flag);
         try {
-            TimeParser.parseTime(value);
+            long time = TimeParser.parseTime(value);
             if (MechanicsFlag.DESTROY_TIMER == flag) {
-                insertMetaDataFromFlagArgument(portal, MetaData.DESTROY_COUNTDOWN, value);
+                portal.setMetadata(new JsonPrimitive(time), MetaData.DESTROY_TIME.name());
             } else if (MechanicsFlag.OPEN_TIMER == flag) {
                 insertMetaDataFromFlagArgument(portal, MetaData.OPEN_COUNTDOWN, value);
             } else {

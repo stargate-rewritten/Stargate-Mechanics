@@ -15,6 +15,7 @@ import org.sgrewritten.stargatemechanics.redstone.OrRedstoneEngine;
 import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
 import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideLoader;
 import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideRegistry;
+import org.sgrewritten.stargatemechanics.utils.DestroyUtils;
 import org.sgrewritten.stargatemechanics.utils.PortalUtil;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
 
@@ -72,6 +73,7 @@ public class StargateMechanics extends JavaPlugin {
         RedstoneUtils.loadPortals(stargateAPI.getRegistry(), engine);
         PortalUtil.getAllPortals(stargateAPI.getRegistry()).filter(realPortal -> realPortal.hasFlag(MechanicsFlag.GENERATE))
                 .forEach(realPortal -> BehaviorInserter.insertMechanicsBehavior(realPortal, stargateAPI, this, mechanicsLanguageManager));
+        PortalUtil.getAllPortals(stargateAPI.getRegistry()).forEach(realPortal -> DestroyUtils.register(realPortal, stargateAPI.getNetworkManager(), this));
     }
 
     private void registerCustomFlags() {
