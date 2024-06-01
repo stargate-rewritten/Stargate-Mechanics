@@ -32,13 +32,13 @@ public class CoordinateParser {
     private static final Pattern RADIUS_EQUALS = Pattern.compile("r=(" + NUMBER + ")|(" + NUMBER + ")=r", Pattern.CASE_INSENSITIVE);
     private static final Pattern INVALID_RANDOM_PATTERN = Pattern.compile("(>r<)|(<r>)|[^r<>=.e0-9]", Pattern.CASE_INSENSITIVE);
     private static final Pattern INVALID_DEST_PATTERN = Pattern.compile("[^=.,~e0-9xyz]", Pattern.CASE_INSENSITIVE);
-    private static final Pattern X_Z_PATTERN = Pattern.compile("(" + NUMBER + "),(" + NUMBER + ")");
-    private static final Pattern X_Y_Z_PATTERN = Pattern.compile("(" + NUMBER + "),(" + NUMBER + "),(" + NUMBER + ")");
+    private static final Pattern X_Z_PATTERN = Pattern.compile("(" + NUMBER + "),(" + NUMBER + ")", Pattern.CASE_INSENSITIVE);
+    private static final Pattern X_Y_Z_PATTERN = Pattern.compile("(" + NUMBER + "),(" + NUMBER + "),(" + NUMBER + ")", Pattern.CASE_INSENSITIVE);
     private static final Pattern X_PATTERN = Pattern.compile("x=(" + NUMBER + ")|(" + NUMBER + ")=x", Pattern.CASE_INSENSITIVE);
     private static final Pattern Y_PATTERN = Pattern.compile("y=(" + NUMBER + ")|(" + NUMBER + ")=y", Pattern.CASE_INSENSITIVE);
     private static final Pattern Z_PATTERN = Pattern.compile("z=(" + NUMBER + ")|(" + NUMBER + ")=z", Pattern.CASE_INSENSITIVE);
-    private static final Pattern RELATIVE_X_Z_PATTERN = Pattern.compile("~(" + NUMBER + "),~(" + NUMBER + ")");
-    private static final Pattern RELATIVE_X_Y_Z_PATTERN = Pattern.compile("~(" + NUMBER + "),~(" + NUMBER + "),~(" + NUMBER + ")");
+    private static final Pattern RELATIVE_X_Z_PATTERN = Pattern.compile("~(" + NUMBER + "),~(" + NUMBER + ")", Pattern.CASE_INSENSITIVE);
+    private static final Pattern RELATIVE_X_Y_Z_PATTERN = Pattern.compile("~(" + NUMBER + "),~(" + NUMBER + "),~(" + NUMBER + ")", Pattern.CASE_INSENSITIVE);
 
     private static final Random RANDOM = new Random();
 
@@ -77,7 +77,7 @@ public class CoordinateParser {
         Location destinationCenter;
         AtomicBoolean hasDefinedY = new AtomicBoolean();
         if (expressionSplit.containsKey(CoordinateDescriptorType.NON_RANDOM)) {
-            destinationCenter = parseDestination(expression, origin, world, hasDefinedY);
+            destinationCenter = parseDestination(expressionSplit.get(CoordinateDescriptorType.NON_RANDOM), origin, world, hasDefinedY);
         } else {
             destinationCenter = origin.getGate().getTopLeft();
         }

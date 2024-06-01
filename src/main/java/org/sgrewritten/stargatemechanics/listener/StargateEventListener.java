@@ -161,6 +161,7 @@ public class StargateEventListener implements Listener {
             insertMetaDataFromFlagArgument(portal, MetaData.DESTINATION_COORDS, value);
         } catch (ParseException e) {
             MessageSender.sendMessage(entity, mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INVALID_ARGUMENT));
+            MessageSender.sendMessage(entity, e.getMessage());
             return false;
         }
         return true;

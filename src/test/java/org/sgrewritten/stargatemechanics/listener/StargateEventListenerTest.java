@@ -11,12 +11,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sgrewritten.stargate.Stargate;
 import org.sgrewritten.stargate.api.event.portal.StargateCreatePortalEvent;
-import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.api.network.portal.RealPortal;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.exception.ParseException;
 import org.sgrewritten.stargatemechanics.locale.MechanicsLanguageManager;
 import org.sgrewritten.stargatemechanics.metadata.MetaData;
 import org.sgrewritten.stargatemechanics.mock.GateMock;
+import org.sgrewritten.stargatemechanics.mock.MockBehavior;
 import org.sgrewritten.stargatemechanics.mock.NetworkMock;
 import org.sgrewritten.stargatemechanics.mock.PortalMock;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
@@ -47,35 +48,36 @@ class StargateEventListenerTest {
         this.server = MockBukkit.mock();
         this.world = server.addSimpleWorld("world");
         this.player = server.addPlayer("player");
-        this.gate = new GateMock("nether.gate", new Location(world,10,14,10));
+        this.gate = new GateMock("nether.gate", new Location(world, 10, 14, 10));
         this.network = new NetworkMock("network");
-        this.exit = new Location(world,10,10,10);
+        this.exit = new Location(world, 10, 10, 10);
         this.portal = new PortalMock(gate, network, exit);
         this.stargate = MockBukkit.load(Stargate.class);
         this.stargateMechanics = MockBukkit.load(StargateMechanics.class);
         this.engine = new OrRedstoneEngine(stargate.getRegistry());
         this.coloringOverrideRegistry = new ColoringOverrideRegistry();
-        this.mechanicsLanguageManager = new MechanicsLanguageManager(stargateMechanics,"en");
-        this.listener = new StargateEventListener(stargateMechanics,stargate,engine,coloringOverrideRegistry, mechanicsLanguageManager);
+        this.mechanicsLanguageManager = new MechanicsLanguageManager(stargateMechanics, "en");
+        this.listener = new StargateEventListener(stargateMechanics, stargate, engine, coloringOverrideRegistry, mechanicsLanguageManager);
     }
 
     @AfterEach
-    void tearDown(){
+    void tearDown() {
         MockBukkit.unmock();
     }
+
     @Test
     void onStargateCreateTest_CoordGate() throws ParseException, IOException {
         String coordString = "10<R<100";
         String timerString = "1D";
-        String[] lines = new String[] {
+        String[] lines = new String[]{
                 "portal",
                 "",
                 "network",
-                MechanicsFlag.GENERATE.getCharacterRepresentation() + "{"+coordString+"}" + MechanicsFlag.OPEN_TIMER.getCharacterRepresentation() + "{" + timerString + "}"
+                MechanicsFlag.GENERATE.getCharacterRepresentation() + "{" + coordString + "}" + MechanicsFlag.OPEN_TIMER.getCharacterRepresentation() + "{" + timerString + "}"
         };
         portal.addFlag(MechanicsFlag.GENERATE);
         portal.addFlag(MechanicsFlag.OPEN_TIMER);
-        StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
+        StargateCreatePortalEvent event = new StargateCreatePortalEvent(player, portal, lines, false, null, 0);
         listener.onStargateCreate(event);
         Assertions.assertEquals(coordString, portal.getMetadata(MetaData.DESTINATION_COORDS.name()).getAsString());
         Assertions.assertEquals(timerString, portal.getMetadata(MetaData.OPEN_COUNTDOWN.name()).getAsString());
@@ -84,29 +86,29 @@ class StargateEventListenerTest {
     @Test
     void onStargateCreateTest_InvalidRandomCoordArgument() {
         String coordString = "10<R<g";
-        String[] lines = new String[] {
+        String[] lines = new String[]{
                 "portal",
                 "",
                 "network",
-                MechanicsFlag.GENERATE.getCharacterRepresentation() + "{"+coordString+"}"
+                MechanicsFlag.GENERATE.getCharacterRepresentation() + "{" + coordString + "}"
         };
         portal.addFlag(MechanicsFlag.GENERATE);
-        StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
+        StargateCreatePortalEvent event = new StargateCreatePortalEvent(player, portal, lines, false, null, 0);
         listener.onStargateCreate(event);
-        Assertions.assertFalse(portal.hasFlag(MechanicsFlag.GENERATE));
+        Assertions.assertInstanceOf(MockBehavior.class, ((RealPortal) event.getPortal()).getBehavior());
     }
 
     @Test
     void onStargateCreateTest_InvalidCountdownArgument() {
         String countdownString = "1q";
-        String[] lines = new String[] {
+        String[] lines = new String[]{
                 "portal",
                 "",
                 "network",
-                MechanicsFlag.OPEN_TIMER.getCharacterRepresentation() + "{"+countdownString+"}"
+                MechanicsFlag.OPEN_TIMER.getCharacterRepresentation() + "{" + countdownString + "}"
         };
         portal.addFlag(MechanicsFlag.OPEN_TIMER);
-        StargateCreatePortalEvent event = new StargateCreatePortalEvent(player,portal,lines,false,null,0);
+        StargateCreatePortalEvent event = new StargateCreatePortalEvent(player, portal, lines, false, null, 0);
         listener.onStargateCreate(event);
         Assertions.assertFalse(portal.hasFlag(MechanicsFlag.OPEN_TIMER));
     }
