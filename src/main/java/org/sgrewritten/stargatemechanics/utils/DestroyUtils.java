@@ -43,9 +43,9 @@ public class DestroyUtils {
             GateAPI gateAPI = portal.getGate();
             Material closedType = gateAPI.getFormat().getIrisMaterial(false);
             List<BlockLocation> frameLocations = gateAPI.getLocations(GateStructureType.FRAME);
-            frameLocations.stream().map(BlockLocation::getLocation).forEach(location -> location.getBlock().setType(closedType));
             gateAPI.getPortalPositions().stream().map(PortalPosition::getRelativePositionLocation).map(gateAPI::getLocation)
                     .map(Location::getBlock).forEach(block -> block.setType(closedType));
+            frameLocations.stream().map(BlockLocation::getLocation).forEach(location -> location.getBlock().setType(closedType));
         },10);
 
     }
