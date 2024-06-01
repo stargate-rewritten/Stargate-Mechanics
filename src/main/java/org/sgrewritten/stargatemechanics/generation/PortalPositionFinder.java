@@ -52,6 +52,7 @@ public class PortalPositionFinder {
     }
 
     private List<Location> getTestPoints(Location startingPoint, int searchBoxHalfWidth) {
+        startingPoint = new Location(startingPoint.getWorld(), startingPoint.getBlockX(), startingPoint.getBlockY(), startingPoint.getBlockZ());
         List<Location> testPoints = new ArrayList<>();
         for (int x = -searchBoxHalfWidth; x <= searchBoxHalfWidth; x++) {
             for (int y = -searchBoxHalfWidth; y <= searchBoxHalfWidth; y++) {

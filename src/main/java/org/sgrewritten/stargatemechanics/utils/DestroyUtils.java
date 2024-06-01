@@ -11,10 +11,12 @@ import org.sgrewritten.stargate.api.network.NetworkManager;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.PortalPosition;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
+import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.metadata.MetaData;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
 
 import java.util.List;
+import java.util.logging.Level;
 
 public class DestroyUtils {
 
@@ -37,7 +39,7 @@ public class DestroyUtils {
         Bukkit.getScheduler().runTaskLater(plugin, () -> destroy(realPortal, networkManager, plugin), timeToDestroyMillis / 50);
     }
 
-    private static void destroy(RealPortal portal, NetworkManager networkManager, Plugin plugin){
+    private static void destroy(RealPortal portal, NetworkManager networkManager, Plugin plugin) {
         networkManager.destroyPortal(portal);
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             GateAPI gateAPI = portal.getGate();
@@ -45,8 +47,11 @@ public class DestroyUtils {
             List<BlockLocation> frameLocations = gateAPI.getLocations(GateStructureType.FRAME);
             gateAPI.getPortalPositions().stream().map(PortalPosition::getRelativePositionLocation).map(gateAPI::getLocation)
                     .map(Location::getBlock).forEach(block -> block.setType(closedType));
-            frameLocations.stream().map(BlockLocation::getLocation).forEach(location -> location.getBlock().setType(closedType));
-        },10);
+            frameLocations.stream().map(BlockLocation::getLocation).forEach(location -> {
+                StargateMechanics.log(Level.INFO, location.toString());
+                location.getBlock().setType(closedType);
+            });
+        }, 10);
 
     }
 }
