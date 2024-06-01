@@ -26,12 +26,12 @@ public class CoordinateParser {
         throw new IllegalStateException("Utility class");
     }
 
-    private static final String NUMBER = "([+]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?";
+    private static final String NUMBER = "([+-]?(?:\\d+\\.?|\\d*\\.\\d+))(?:[Ee][+-]?\\d+)?";
     private static final Pattern RADIUS_GREATER_THAN = Pattern.compile("r>(" + NUMBER + ")|(" + NUMBER + ")<r", Pattern.CASE_INSENSITIVE);
     private static final Pattern RADIUS_LESSER_THAN = Pattern.compile("r<(" + NUMBER + ")|(" + NUMBER + ")>r", Pattern.CASE_INSENSITIVE);
     private static final Pattern RADIUS_EQUALS = Pattern.compile("r=(" + NUMBER + ")|(" + NUMBER + ")=r", Pattern.CASE_INSENSITIVE);
     private static final Pattern INVALID_RANDOM_PATTERN = Pattern.compile("(>r<)|(<r>)|[^r<>=.e0-9]", Pattern.CASE_INSENSITIVE);
-    private static final Pattern INVALID_DEST_PATTERN = Pattern.compile("[^=.,~e0-9xyz]", Pattern.CASE_INSENSITIVE);
+    private static final Pattern INVALID_DEST_PATTERN = Pattern.compile("[^=.,~e0-9xyz\\-]", Pattern.CASE_INSENSITIVE);
     private static final Pattern X_Z_PATTERN = Pattern.compile("(" + NUMBER + "),(" + NUMBER + ")", Pattern.CASE_INSENSITIVE);
     private static final Pattern X_Y_Z_PATTERN = Pattern.compile("(" + NUMBER + "),(" + NUMBER + "),(" + NUMBER + ")", Pattern.CASE_INSENSITIVE);
     private static final Pattern X_PATTERN = Pattern.compile("x=(" + NUMBER + ")|(" + NUMBER + ")=x", Pattern.CASE_INSENSITIVE);
@@ -214,7 +214,7 @@ public class CoordinateParser {
     }
 
     private static Map<CoordinateDescriptorType, String> getExpressions(String expression) throws ParseException {
-        String[] expressions = expression.split(";");
+        String[] expressions = expression.replace(" ", "").split(";");
         if (expressions.length == 1 && expressions[0].isBlank()) {
             return Map.of();
         }
