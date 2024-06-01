@@ -5,7 +5,7 @@ public enum ConfigurationOption {
 
     LOCALE("locale"),
 
-    GENERATED_GATE_FLAG_STRING("generation.jumpGateDestinationFlags");
+    GENERATED_GATE_FLAG_STRING("gates.generation.jumpGateDestinationFlags");
 
     private final String key;
 

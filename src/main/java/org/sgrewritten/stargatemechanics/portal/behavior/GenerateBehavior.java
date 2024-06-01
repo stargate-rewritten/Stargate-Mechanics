@@ -5,6 +5,7 @@ import com.google.gson.JsonPrimitive;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -105,7 +106,7 @@ public class GenerateBehavior extends AbstractPortalBehavior {
             if (getDestination() != null && getDestination() instanceof RealPortal destinationPortal && !generateName) {
                 stargateAPI.getNetworkManager().destroyPortal(destinationPortal);
             }
-            createGateFromFlagArguments(super.portal);
+            createGateFromFlagArguments(super.portal, event.getPlayer());
         }
         super.onButtonClick(event);
     }
@@ -138,7 +139,7 @@ public class GenerateBehavior extends AbstractPortalBehavior {
         }
     }
 
-    private void createGateFromFlagArguments(RealPortal realPortal) {
+    private void createGateFromFlagArguments(RealPortal realPortal, @NotNull Player player) {
         try {
             Location destinationCoordinate = CoordinateParser.getLocationFromPortal(realPortal);
             if (destinationCoordinate != null) {
@@ -159,10 +160,11 @@ public class GenerateBehavior extends AbstractPortalBehavior {
                         portalBuilder.setFlags(flagsString);
                     }
                     portalBuilder.setDestination(realPortal.getId());
-                    portalBuilder.setNetwork(realPortal.getNetwork()).build();
+                    portalBuilder.setNetwork(realPortal.getNetwork());
                     if (generatedPortalFlagString != null) {
                         portalBuilder.setFlags(generatedPortalFlagString);
                     }
+                    portalBuilder.addEventHandling(player).build();
                     if (generateName) {
                         realPortal.setMetadata(new JsonPrimitive(destinationName), DESTINATION);
                         this.destinationString = destinationName;
