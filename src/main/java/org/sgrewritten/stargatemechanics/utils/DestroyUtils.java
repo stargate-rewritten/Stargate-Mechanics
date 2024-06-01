@@ -34,7 +34,7 @@ public class DestroyUtils {
             destroy(realPortal, networkManager, plugin);
             return;
         }
-        Bukkit.getScheduler().runTaskLater(plugin, () -> destroy(realPortal, networkManager, plugin), timeToDestroyMillis * 50);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> destroy(realPortal, networkManager, plugin), timeToDestroyMillis / 50);
     }
 
     private static void destroy(RealPortal portal, NetworkManager networkManager, Plugin plugin){
