@@ -15,10 +15,15 @@ public class BehaviorInserter {
     }
 
     public static void insertMechanicsBehavior(RealPortal realPortal, StargateAPI stargateAPI, StargateMechanics plugin, MechanicsLanguageManager mechanicsLanguageManager) {
-        String previousDestination = realPortal.getBehavior().getDestinationName();
-        String portalGenerationFlagString = plugin.getConfig().getString(ConfigurationOption.GENERATED_GATE_FLAG_STRING.getKey());
         if (realPortal.hasFlag(MechanicsFlag.GENERATE)) {
             boolean isRandomDestination = CoordinateParser.isRandomCoordinateDestination(realPortal);
+            String previousDestination = realPortal.getBehavior().getDestinationName();
+            String portalGenerationFlagString;
+            if (isRandomDestination) {
+                portalGenerationFlagString = plugin.getConfig().getString(ConfigurationOption.RANDOM_GENERATED_GATE_FLAG_STRING.getKey());
+            } else {
+                portalGenerationFlagString = plugin.getConfig().getString(ConfigurationOption.GENERATED_GATE_FLAG_STRING.getKey());
+            }
             realPortal.setBehavior(new GenerateBehavior(stargateAPI, plugin, mechanicsLanguageManager, previousDestination, isRandomDestination, portalGenerationFlagString));
             realPortal.redrawSigns();
         }

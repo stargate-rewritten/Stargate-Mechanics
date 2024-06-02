@@ -150,7 +150,7 @@ public class GenerateBehavior extends AbstractPortalBehavior {
                     GateAPI gateAPi = portalPositionFinder.getValidGate(4);
                     gateAPi.forceGenerateStructure();
                     gateAPi.calculatePortalPositions(false);
-                    String flagsString = plugin.getConfig().getString(ConfigurationOption.GENERATED_GATE_FLAG_STRING.getKey());
+                    String flagsString = plugin.getConfig().getString(ConfigurationOption.RANDOM_GENERATED_GATE_FLAG_STRING.getKey());
                     String destinationName = getDestinationName(realPortal, destinationCoordinate);
                     if (destinationName == null) {
                         return;

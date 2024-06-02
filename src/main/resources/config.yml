@@ -56,12 +56,6 @@ gates:
     # This setting is ignored unless gateFormatSelectionMethod is set to "Specific"
     specifiedGateFormat: nether.gate
 
-    # Should J gates generate a destination portal?
-    # Options:
-    #    - False [Teleport the player to the destination; do not generate a gate].
-    #    - True [Generate a portal at the destination].
-    jumpGateGenerationBehaviour: True
-
     # What flag should be on generated G portals with random coordinates?
     jumpGateDestinationFlags: 'HD{1m}'
 

@@ -65,7 +65,7 @@ public class StargateMechanics extends JavaPlugin {
         }
 
         blockEventListener = new BlockEventListener(stargateAPI.getRegistry(), this, engine);
-        List<String> disabledFlagsList = getConfig().getList("gates.disabledFlags").stream().map(Object::toString).map(String::strip).toList();
+        List<String> disabledFlagsList = getConfig().getList(ConfigurationOption.DISABLED_FLAGS.getKey()).stream().map(Object::toString).map(String::strip).toList();
         if(disabledFlagsList.stream().anyMatch(string -> string.length() != 1)) {
             throw new IllegalArgumentException("Expected gate.disabledFlags to be a list of characters");
         }
