@@ -47,7 +47,7 @@ gates:
     # Options:
     #    - Origin [Duplicate the origin portal's design in the destination]
     #    - Specific [Specify a .gate file for the portal's destination's design].
-    gateformatSelectionMethod: region
+    gateformatSelectionMethod: specific
 
     # This setting is ignored unless gateFormatSelectionMethod is set to "Specific"
     specifiedGateFormat: nether.gate
