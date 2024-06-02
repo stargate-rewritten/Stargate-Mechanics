@@ -46,11 +46,7 @@ gates:
     # When a new G or J gate is generated, what behaviour should select the gateformat?
     # Options:
     #    - Origin [Duplicate the origin portal's design in the destination]
-    #    - Region [Figure out the most logical default portal design]
-    #      (i.e. netherportals in the nether, underwater portals at the bottom of the ocean, etc.)
     #    - Specific [Specify a .gate file for the portal's destination's design].
-    #    - Ruined [Force the portal to generate as an existing ruined portal]
-    #      (WILL REDIRECT G GATES; WILL SIGNIFICANTLY LIMIT J GATES)
     gateformatSelectionMethod: region
 
     # This setting is ignored unless gateFormatSelectionMethod is set to "Specific"
