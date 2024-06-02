@@ -42,12 +42,11 @@ public class DestroyUtils {
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             GateAPI gateAPI = portal.getGate();
             Material closedType = gateAPI.getFormat().getIrisMaterial(false);
-            List<BlockLocation> frameLocations = gateAPI.getLocations(GateStructureType.FRAME);
             gateAPI.getPortalPositions().stream().map(PortalPosition::getRelativePositionLocation).map(gateAPI::getLocation)
                     .map(Location::getBlock).forEach(block -> block.setType(closedType));
-            frameLocations.stream().map(BlockLocation::getLocation).forEach(location -> {
-                location.getBlock().setType(closedType);
-            });
+            for(BlockLocation frameLocation : gateAPI.getLocations(GateStructureType.FRAME)){
+                frameLocation.getLocation().getBlock().setType(closedType);
+            }
         }, 10);
 
     }
