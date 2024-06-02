@@ -194,9 +194,8 @@ public class OrRedstoneEngine implements RedstoneEngine {
                 || (changedBlockData instanceof RedstoneWire redstoneWire && redstoneWire.getPower() != block.getBlockPower())) {
             return;
         }
-        Location blockLocation = block.getLocation();
-        Set<RealPortal> portals = stopTrackingPosition(blockLocation);
-        trackPositionsCheck(blockLocation.getBlock());
+        Set<RealPortal> portals = stopTrackingPosition(block.getLocation());
+        trackPositionsCheck(block);
         for (RealPortal portal : portals) {
             if (!isRedstoneActive(portal)) {
                 this.updatePortalState(portal);

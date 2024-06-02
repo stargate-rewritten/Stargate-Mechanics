@@ -32,7 +32,7 @@ public class BlockEventListener implements Listener{
     }
 
     @EventHandler
-    public void onBlockPlace(BlockPhysicsEvent event){
+    public void onBlockPlace(BlockPlaceEvent event){
         engine.onBlockPlace(event.getBlock());
     }
 
