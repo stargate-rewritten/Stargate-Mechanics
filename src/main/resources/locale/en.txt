@@ -1,6 +1,7 @@
 prefix=[SG-Mechanics]
 flagRemovedIncompatible=The flag(s) %flags% was removed, as it was incompatible with another flag
 flagRemovedInvalidArgument=Invalid input arguments for flag '%flags%', removing flag
+flagDisabled=The flag(s) %flags% are disabled
 coordGateLine1=Click button to
 coordGateAlwaysOnLine1=Enter gate to
 coordGateLine2=Create portal
