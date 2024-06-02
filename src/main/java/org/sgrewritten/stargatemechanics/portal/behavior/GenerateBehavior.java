@@ -143,9 +143,9 @@ public class GenerateBehavior extends AbstractPortalBehavior {
         try {
             Location destinationCoordinate = CoordinateParser.getLocationFromPortal(realPortal);
             if (destinationCoordinate != null) {
-                Optional<String> gateFormatName = GateFormatRegistry.getAllGateFormatNames().stream().findAny();
-                if (gateFormatName.isPresent()) {
-                    GateFormatAPI gateFormatAPI = GateFormatRegistry.getFormat(gateFormatName.get());
+                Optional<GateFormatAPI> gateFormatAPIOptional = GateFormatSelector.selectFormat(realPortal, plugin);
+                if (gateFormatAPIOptional.isPresent()) {
+                    GateFormatAPI gateFormatAPI = gateFormatAPIOptional.get();
                     PortalPositionFinder portalPositionFinder = new PortalPositionFinder(destinationCoordinate, gateFormatAPI, stargateAPI.getRegistry());
                     GateAPI gateAPi = portalPositionFinder.getValidGate(4);
                     gateAPi.forceGenerateStructure();

@@ -7,7 +7,11 @@ public enum ConfigurationOption {
 
     GENERATED_GATE_FLAG_STRING("gates.generation.generateGateDestinationFlags"),
 
-    DISABLED_FLAGS("gates.disabledFlags");
+    DISABLED_FLAGS("gates.disabledFlags"),
+
+    GATE_FORMAT_SELECTION_BEHAVIOR("gates.generation.gateformatSelectionMethod"),
+
+    SPECIFIED_GATE_FORMAT_NAME("gates.generation.specifiedGateFormat");
 
     private final String key;
 
