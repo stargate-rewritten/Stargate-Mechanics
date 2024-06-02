@@ -55,7 +55,7 @@ public class StargateMechanics extends JavaPlugin {
         loadStargate();
         registerCustomFlags();
         PluginManager pluginManager = getServer().getPluginManager();
-        this.engine = new OrRedstoneEngine(stargateAPI.getRegistry());
+        this.engine = new OrRedstoneEngine(stargateAPI.getRegistry(), this);
         this.colorRegistry = new ColoringOverrideRegistry();
         new ColoringOverrideLoader().load(stargateAPI.getRegistry(), colorRegistry);
         try {

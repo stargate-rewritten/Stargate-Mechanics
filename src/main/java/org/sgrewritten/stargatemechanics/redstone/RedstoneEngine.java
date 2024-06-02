@@ -2,6 +2,7 @@ package org.sgrewritten.stargatemechanics.redstone;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.sgrewritten.stargate.api.network.portal.BlockLocation;
 import org.sgrewritten.stargate.api.network.portal.RealPortal;
 
@@ -39,7 +40,7 @@ public interface RedstoneEngine {
      * What should happen when the block encounters a change in state.
      * @param block
      */
-    void onBlockChange(Block block);
+    void onBlockChange(Block block, BlockData changedBlockData);
 
     /**
      * What should happen when a block is placed.

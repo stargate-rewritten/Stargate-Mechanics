@@ -9,6 +9,8 @@ import org.sgrewritten.stargate.api.network.RegistryAPI;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.redstone.RedstoneEngine;
 
+import java.util.logging.Level;
+
 public class BlockEventListener implements Listener{
     private final RegistryAPI registry;
     private final StargateMechanics plugin;
@@ -26,7 +28,7 @@ public class BlockEventListener implements Listener{
 
     @EventHandler
     public void onBlockPhysics(BlockPhysicsEvent event){
-        engine.onBlockChange(event.getBlock());
+        engine.onBlockChange(event.getBlock(), event.getChangedBlockData());
     }
 
     @EventHandler

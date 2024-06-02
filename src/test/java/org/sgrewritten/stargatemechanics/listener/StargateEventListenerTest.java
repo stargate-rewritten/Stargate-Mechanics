@@ -55,7 +55,7 @@ class StargateEventListenerTest {
         this.portal = new PortalMock(gate, network, exit);
         this.stargate = MockBukkit.load(Stargate.class);
         this.stargateMechanics = MockBukkit.load(StargateMechanics.class);
-        this.engine = new OrRedstoneEngine(stargate.getRegistry());
+        this.engine = new OrRedstoneEngine(stargate.getRegistry(), stargateMechanics);
         this.coloringOverrideRegistry = new ColoringOverrideRegistry();
         this.mechanicsLanguageManager = new MechanicsLanguageManager(stargateMechanics, "en");
         this.listener = new StargateEventListener(stargateMechanics, stargate, engine, coloringOverrideRegistry, mechanicsLanguageManager, new HashSet<>());
