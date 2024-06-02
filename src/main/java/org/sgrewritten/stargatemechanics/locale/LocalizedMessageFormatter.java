@@ -1,13 +1,15 @@
 package org.sgrewritten.stargatemechanics.locale;
 
+import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+
 import java.util.Collection;
 
 public class LocalizedMessageFormatter {
 
-    public static String insertFlags(String unformattedMsg, Collection<Character> flags){
+    public static String insertFlags(String unformattedMsg, Collection<PortalFlag> flags){
         StringBuilder flagStringBuilder = new StringBuilder();
-        for(Character flag : flags){
-            flagStringBuilder.append(flag);
+        for(PortalFlag flag : flags){
+            flagStringBuilder.append(flag.getCharacterRepresentation());
         }
         return unformattedMsg.replace("%flags%", flagStringBuilder.toString());
     }

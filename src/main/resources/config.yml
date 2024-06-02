@@ -33,16 +33,14 @@ locale: en
 gates:
 # |                                      [ Flag Toggles ]                                        | #
 # |__   Some flags may be problematic in some cases, and as such, may optionally be disabled   __| #
-  flags:
-    # Flags are enabled when true, and disalbed when false.
-    redstonePowered: true # The E flag.
-    hideNetwork: true # The N flag
+  disabledFlags: []
+
 
 # |                                  [ Generation Behaviour ]                                    | #
 # |__       Configurations Needed for Stargate Mechanics G, J, & Ruined Flags/Behaviours.        | #
   generation:
 
-    # If needed, should G and J gates break blocks to generate?
+    # If needed, should G gates break blocks to generate?
     agressiveGateGeneration: true
 
     # When a new G or J gate is generated, what behaviour should select the gateformat?
@@ -64,25 +62,11 @@ gates:
     #    - True [Generate a portal at the destination].
     jumpGateGenerationBehaviour: True
 
-    # What flags should be on generated (destination) J portals by default?
-    # This setting is ignored unless jumpGateGenerationBehaviour is True.
-    jumpGateDestinationFlags: 'HD{5184000}'
+    # What flag should be on generated G portals with random coordinates?
+    jumpGateDestinationFlags: 'HD{1m}'
 
     #What flags should be on generated G portals by default?
     generateGateDestinationFlags: ''
-
-    #Where should generated J gates link?
-    # Options:
-    #  - FixedReturn
-    #  - OriginNetwork
-    #  - SpecifiedReturn
-    #  - None
-    defaultJGateDestination: FixedReturn
-
-    # This setting is ignored unless specifiedJGateDestination is set to "SpecifiedReturn"
-    specifiedJGateDestination:
-      - destinationName: default
-      - networkName: default
 
 # |                                           [ Debug ]                                          | #
 # |__     These settings are provided to help developers diagnose issues with this plugin.     __| #

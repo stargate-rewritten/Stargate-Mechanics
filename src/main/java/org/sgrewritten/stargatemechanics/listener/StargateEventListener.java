@@ -51,11 +51,12 @@ import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class StargateEventListener implements Listener {
 
@@ -63,20 +64,32 @@ public class StargateEventListener implements Listener {
     private final RedstoneEngine engine;
     private final ColoringOverrideRegistry coloringOverrideRegistry;
     private final MechanicsLanguageManager mechanicsLanguageManager;
+    private final Set<PortalFlag> disabledFlags;
     private StargateMechanics plugin;
 
-    public StargateEventListener(StargateMechanics plugin, StargateAPI stargateAPI, RedstoneEngine engine, ColoringOverrideRegistry coloringOverrideRegistry, MechanicsLanguageManager mechanicsLanguageManager) {
+    public StargateEventListener(StargateMechanics plugin, StargateAPI stargateAPI, RedstoneEngine engine,
+                                 ColoringOverrideRegistry coloringOverrideRegistry, MechanicsLanguageManager mechanicsLanguageManager,
+                                 Set<PortalFlag> disabledFlags) {
         this.plugin = plugin;
         this.stargateAPI = stargateAPI;
         this.engine = engine;
         this.coloringOverrideRegistry = coloringOverrideRegistry;
         this.mechanicsLanguageManager = mechanicsLanguageManager;
+        this.disabledFlags = disabledFlags;
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onStargateCreate(StargateCreatePortalEvent event) {
         if (!(event.getPortal() instanceof RealPortal realPortal)) {
             return;
+        }
+        List<PortalFlag> portalFlags = disabledFlags.stream().filter(realPortal::hasFlag).toList();
+        portalFlags.forEach(realPortal::removeFlag);
+        String disabledFlagsString = portalFlags.stream().map(PortalFlag::getCharacterRepresentation).map(Object::toString).
+                collect(Collectors.joining());
+        if(!disabledFlagsString.isBlank()){
+            String unformattedMsg = mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_DISABLED);
+            MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg, portalFlags));
         }
         if (event.getPortal().hasFlag(PortalFlag.NO_SIGN)) {
             SignUtils.removeSignsFromPortal(realPortal);
@@ -87,7 +100,7 @@ public class StargateEventListener implements Listener {
             if (event.getPortal().hasFlag(PortalFlag.NETWORKED) || event.getPortal().hasFlag(PortalFlag.ALWAYS_ON)) {
                 event.removeFlag(MechanicsFlag.REDSTONE_POWERED);
                 String unformattedMsg = mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INCOMPATIBLE);
-                MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg, List.of(MechanicsFlag.REDSTONE_POWERED.getCharacterRepresentation())));
+                MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg, List.of(MechanicsFlag.REDSTONE_POWERED)));
             }
         }
         if (realPortal.hasFlag(MechanicsFlag.GENERATE)) {

@@ -20,7 +20,13 @@ import org.sgrewritten.stargatemechanics.utils.PortalUtil;
 import org.sgrewritten.stargatemechanics.utils.redstone.RedstoneUtils;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The main class for the Stargate-ExtraFlags add-on
@@ -59,7 +65,12 @@ public class StargateMechanics extends JavaPlugin {
         }
 
         blockEventListener = new BlockEventListener(stargateAPI.getRegistry(), this, engine);
-        pluginManager.registerEvents(new StargateEventListener(this, stargateAPI, engine, colorRegistry, mechanicsLanguageManager), this);
+        List<String> disabledFlagsList = getConfig().getList("gates.disabledFlags").stream().map(Object::toString).map(String::strip).toList();
+        if(disabledFlagsList.stream().anyMatch(string -> string.length() != 1)) {
+            throw new IllegalArgumentException("Expected gate.disabledFlags to be a list of characters");
+        }
+        Set<PortalFlag> disabledFlags = PortalFlag.parseFlags(String.join("", disabledFlagsList));
+        pluginManager.registerEvents(new StargateEventListener(this, stargateAPI, engine, colorRegistry, mechanicsLanguageManager, disabledFlags), this);
         pluginManager.registerEvents(blockEventListener, this);
         pluginManager.registerEvents(new PluginEventListener(this), this);
         this.playerEventListener = new PlayerEventListener(stargateAPI, colorRegistry, this);

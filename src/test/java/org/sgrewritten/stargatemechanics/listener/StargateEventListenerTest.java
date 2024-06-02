@@ -25,6 +25,7 @@ import org.sgrewritten.stargatemechanics.redstone.OrRedstoneEngine;
 import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideRegistry;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 
 class StargateEventListenerTest {
@@ -57,7 +58,7 @@ class StargateEventListenerTest {
         this.engine = new OrRedstoneEngine(stargate.getRegistry());
         this.coloringOverrideRegistry = new ColoringOverrideRegistry();
         this.mechanicsLanguageManager = new MechanicsLanguageManager(stargateMechanics, "en");
-        this.listener = new StargateEventListener(stargateMechanics, stargate, engine, coloringOverrideRegistry, mechanicsLanguageManager);
+        this.listener = new StargateEventListener(stargateMechanics, stargate, engine, coloringOverrideRegistry, mechanicsLanguageManager, new HashSet<>());
     }
 
     @AfterEach
