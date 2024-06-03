@@ -31,6 +31,7 @@ public class PortalWrapper implements RealPortal {
     private final UUID defaultOwner;
     private RealPortal portal = null;
     private UUID playerUuid = null;
+    private boolean destroyed;
 
     public PortalWrapper(Function<OfflinePlayer, RealPortal> constructor, UUID defaultOwner) {
         this.constructor = constructor;
@@ -52,15 +53,18 @@ public class PortalWrapper implements RealPortal {
     }
 
     private void setEventHandling(UUID owner) {
+        if (this.portal != null) {
+            return;
+        }
         playerUuid = owner;
     }
 
     private OfflinePlayer findPlayer() {
-        if(playerUuid == null){
+        if (playerUuid == null) {
             playerUuid = defaultOwner;
         }
         OfflinePlayer player = Bukkit.getPlayer(playerUuid);
-        if(player == null){
+        if (player == null) {
             player = Bukkit.getOfflinePlayer(playerUuid);
         }
         return player;
@@ -68,7 +72,7 @@ public class PortalWrapper implements RealPortal {
 
     @Override
     public void open(@Nullable Portal portal, @Nullable Player player) {
-        if(player != null) {
+        if (player != null) {
             setEventHandling(player.getUniqueId());
         }
         setPortalIfNotPresent();
@@ -137,8 +141,9 @@ public class PortalWrapper implements RealPortal {
 
     @Override
     public void redrawSigns() {
-        setPortalIfNotPresent();
-        this.portal.redrawSigns();
+        if(this.portal != null) {
+            this.portal.redrawSigns();
+        }
     }
 
     @Override
@@ -163,6 +168,7 @@ public class PortalWrapper implements RealPortal {
 
     @Override
     public void doTeleport(@NotNull Entity entity) {
+        setEventHandling(entity.getUniqueId());
         setPortalIfNotPresent();
         this.portal.doTeleport(entity);
     }
@@ -181,8 +187,10 @@ public class PortalWrapper implements RealPortal {
 
     @Override
     public void destroy() {
-        setPortalIfNotPresent();
-        this.portal.destroy();
+        this.destroyed = true;
+        if(this.portal != null) {
+            this.portal.destroy();
+        }
     }
 
     @Override
@@ -279,8 +287,9 @@ public class PortalWrapper implements RealPortal {
 
     @Override
     public void updateState() {
-        setPortalIfNotPresent();
-        this.portal.updateState();
+        if (this.portal != null) {
+            this.portal.updateState();
+        }
     }
 
     @Override
@@ -309,7 +318,14 @@ public class PortalWrapper implements RealPortal {
 
     @Override
     public boolean isDestroyed() {
-        setPortalIfNotPresent();
-        return this.portal.isDestroyed();
+        if(this.portal != null){
+            return this.portal.isDestroyed();
+        } else {
+            return this.destroyed;
+        }
+    }
+
+    public boolean hasGeneratedPortal(){
+        return this.portal != null;
     }
 }

@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Biome;
-import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,6 +49,7 @@ public class GenerateBehavior extends AbstractPortalBehavior {
     private final MechanicsLanguageManager mechanicsLanguageManager;
     private final StargateAPI stargateAPI;
     private final StargateMechanics plugin;
+    private PortalWrapper portalWrapper;
     private static final int MAX_DEST_WIDTH = 12;
     private static final String DESTINATION = "destination";
 
@@ -72,15 +72,15 @@ public class GenerateBehavior extends AbstractPortalBehavior {
     @Override
     public @Nullable Portal getDestination() {
         Portal destination = super.portal.getNetwork().getPortal(destinationString);
-        if(destination == null && portal.hasFlag(PortalFlag.ALWAYS_ON)){
-            destination = new PortalWrapper((aPlayer) -> createGateFromFlagArguments(portal, aPlayer), portal.getOwnerUUID());
+        if (destination == null && portal.hasFlag(PortalFlag.ALWAYS_ON)) {
+            return getPortalWrapper();
         }
         return destination;
     }
 
     @Override
     public @NotNull LineData @NotNull [] getLines() {
-        if (getDestination() == null) {
+        if (getDestination() == null || (portal.hasFlag(PortalFlag.ALWAYS_ON) && alwaysOnInactive())) {
             return getInactiveGateLines();
         }
         return new LineData[]{
@@ -89,6 +89,17 @@ public class GenerateBehavior extends AbstractPortalBehavior {
                 new NetworkLineData(portal.getNetwork()),
                 new TextLineData()
         };
+    }
+
+    private boolean alwaysOnInactive() {
+        if (randomCoordinate) {
+            return true;
+        }
+        Portal destination = getDestination();
+        if (!(destination instanceof PortalWrapper portalWrapper)) {
+            return destination.isDestroyed();
+        }
+        return !portalWrapper.hasGeneratedPortal() || portalWrapper.isDestroyed();
     }
 
     private LineData[] getInactiveGateLines() {
@@ -118,10 +129,14 @@ public class GenerateBehavior extends AbstractPortalBehavior {
     }
 
     public void onEnter(StargateTeleportPortalEvent event) {
-        if (randomCoordinate && generateName) {
-            destinationString = null;
-            portal.redrawSigns();
+        if (randomCoordinate) {
+            if(generateName) {
+                destinationString = null;
+            }
+            portalWrapper = null;
         }
+        portalWrapper = getPortalWrapper();
+        portal.redrawSigns();
     }
 
     @Override
@@ -206,5 +221,12 @@ public class GenerateBehavior extends AbstractPortalBehavior {
             counter++;
         } while (network.isPortalNameTaken(destinationName));
         return destinationName;
+    }
+
+    private PortalWrapper getPortalWrapper(){
+        if(portalWrapper == null || portalWrapper.isDestroyed()){
+            portalWrapper = new PortalWrapper((aPlayer) -> createGateFromFlagArguments(portal, aPlayer), portal.getOwnerUUID());
+        }
+        return portalWrapper;
     }
 }
