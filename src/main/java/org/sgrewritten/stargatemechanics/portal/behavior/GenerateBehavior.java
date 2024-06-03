@@ -4,15 +4,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sgrewritten.stargate.api.StargateAPI;
+import org.sgrewritten.stargate.api.event.portal.StargateTeleportPortalEvent;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateFormatAPI;
-import org.sgrewritten.stargate.api.gate.GateFormatRegistry;
 import org.sgrewritten.stargate.api.network.Network;
 import org.sgrewritten.stargate.api.network.PortalBuilder;
 import org.sgrewritten.stargate.api.network.portal.Portal;
@@ -36,6 +37,7 @@ import org.sgrewritten.stargatemechanics.generation.PortalPositionFinder;
 import org.sgrewritten.stargatemechanics.locale.LocalizedMessageType;
 import org.sgrewritten.stargatemechanics.locale.MechanicsLanguageManager;
 import org.sgrewritten.stargatemechanics.portal.MechanicsFlag;
+import org.sgrewritten.stargatemechanics.portal.PortalWrapper;
 import org.sgrewritten.stargatemechanics.utils.CoordinateParser;
 
 import java.util.Optional;
@@ -69,7 +71,11 @@ public class GenerateBehavior extends AbstractPortalBehavior {
 
     @Override
     public @Nullable Portal getDestination() {
-        return super.portal.getNetwork().getPortal(destinationString);
+        Portal destination = super.portal.getNetwork().getPortal(destinationString);
+        if(destination == null && portal.hasFlag(PortalFlag.ALWAYS_ON)){
+            destination = new PortalWrapper((aPlayer) -> createGateFromFlagArguments(portal, aPlayer), portal.getOwnerUUID());
+        }
+        return destination;
     }
 
     @Override
@@ -111,7 +117,7 @@ public class GenerateBehavior extends AbstractPortalBehavior {
         super.onButtonClick(event);
     }
 
-    public void onEnter() {
+    public void onEnter(StargateTeleportPortalEvent event) {
         if (randomCoordinate && generateName) {
             destinationString = null;
             portal.redrawSigns();
@@ -139,7 +145,7 @@ public class GenerateBehavior extends AbstractPortalBehavior {
         }
     }
 
-    private void createGateFromFlagArguments(RealPortal realPortal, @NotNull Player player) {
+    private @Nullable RealPortal createGateFromFlagArguments(RealPortal realPortal, OfflinePlayer player) {
         try {
             Location destinationCoordinate = CoordinateParser.getLocationFromPortal(realPortal);
             if (destinationCoordinate != null) {
@@ -153,7 +159,7 @@ public class GenerateBehavior extends AbstractPortalBehavior {
                     String flagsString = plugin.getConfig().getString(ConfigurationOption.RANDOM_GENERATED_GATE_FLAG_STRING.getKey());
                     String destinationName = getDestinationName(realPortal, destinationCoordinate);
                     if (destinationName == null) {
-                        return;
+                        return null;
                     }
                     PortalBuilder portalBuilder = new PortalBuilder(stargateAPI, Bukkit.getOfflinePlayer(realPortal.getOwnerUUID()), destinationName).setGate(gateAPi);
                     if (flagsString != null) {
@@ -164,18 +170,21 @@ public class GenerateBehavior extends AbstractPortalBehavior {
                     if (generatedPortalFlagString != null) {
                         portalBuilder.setFlags(generatedPortalFlagString);
                     }
-                    portalBuilder.addEventHandling(player).build();
+                    portalBuilder.addEventHandling(player);
+                    RealPortal output = portalBuilder.build();
                     if (generateName) {
                         realPortal.setMetadata(new JsonPrimitive(destinationName), DESTINATION);
                         this.destinationString = destinationName;
                         portal.redrawSigns();
                     }
+                    return output;
                 }
             }
         } catch (ParseException | GateGenerationFault | InvalidStructureException | TranslatableException |
                  GateConflictException | NoFormatFoundException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     private @Nullable String getDestinationName(@NotNull RealPortal realPortal, @NotNull Location destinationLocation) {

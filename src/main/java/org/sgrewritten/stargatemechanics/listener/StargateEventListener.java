@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -89,7 +90,7 @@ public class StargateEventListener implements Listener {
                 collect(Collectors.joining());
         if(!disabledFlagsString.isBlank()){
             String unformattedMsg = mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_DISABLED);
-            MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg, portalFlags));
+            MessageSender.sendMessage(event.getPlayer(), LocalizedMessageFormatter.insertFlags(unformattedMsg, portalFlags));
         }
         if (event.getPortal().hasFlag(PortalFlag.NO_SIGN)) {
             SignUtils.removeSignsFromPortal(realPortal);
@@ -100,12 +101,12 @@ public class StargateEventListener implements Listener {
             if (event.getPortal().hasFlag(PortalFlag.NETWORKED) || event.getPortal().hasFlag(PortalFlag.ALWAYS_ON)) {
                 event.removeFlag(MechanicsFlag.REDSTONE_POWERED);
                 String unformattedMsg = mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INCOMPATIBLE);
-                MessageSender.sendMessage(event.getEntity(), LocalizedMessageFormatter.insertFlags(unformattedMsg, List.of(MechanicsFlag.REDSTONE_POWERED)));
+                MessageSender.sendMessage(event.getPlayer(), LocalizedMessageFormatter.insertFlags(unformattedMsg, List.of(MechanicsFlag.REDSTONE_POWERED)));
             }
         }
         if (realPortal.hasFlag(MechanicsFlag.GENERATE)) {
             PortalBehavior previousBehavior = realPortal.getBehavior();
-            if (insertCoordData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.GENERATE)) {
+            if (insertCoordData(realPortal, event.getLine(3), event.getPlayer(), MechanicsFlag.GENERATE)) {
                 BehaviorInserter.insertMechanicsBehavior(realPortal, stargateAPI, plugin, mechanicsLanguageManager);
             } else {
                 // Will clear custom behavior flags
@@ -113,10 +114,10 @@ public class StargateEventListener implements Listener {
             }
         }
         if (event.getPortal().hasFlag(MechanicsFlag.OPEN_TIMER)) {
-            insertTimerData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.OPEN_TIMER);
+            insertTimerData(realPortal, event.getLine(3), event.getPlayer(), MechanicsFlag.OPEN_TIMER);
         }
         if (event.getPortal().hasFlag(MechanicsFlag.DESTROY_TIMER)) {
-            insertTimerData(realPortal, event.getLine(3), event.getEntity(), MechanicsFlag.DESTROY_TIMER);
+            insertTimerData(realPortal, event.getLine(3), event.getPlayer(), MechanicsFlag.DESTROY_TIMER);
         }
         DestroyUtils.register(realPortal, stargateAPI.getNetworkManager(), plugin);
     }
@@ -170,7 +171,7 @@ public class StargateEventListener implements Listener {
         builder.open(activator);
     }
 
-    private boolean insertCoordData(RealPortal portal, String line, Entity entity, PortalFlag flag) {
+    private boolean insertCoordData(RealPortal portal, String line, OfflinePlayer entity, PortalFlag flag) {
         String value = findFlagInstructionsString(line, flag);
         if (flag != MechanicsFlag.GENERATE) {
             throw new UnsupportedOperationException();
@@ -186,7 +187,7 @@ public class StargateEventListener implements Listener {
         return true;
     }
 
-    private void insertTimerData(RealPortal portal, String line, Entity entity, PortalFlag flag) {
+    private void insertTimerData(RealPortal portal, String line, OfflinePlayer entity, PortalFlag flag) {
         String value = findFlagInstructionsString(line, flag);
         try {
             long time = TimeParser.parseTime(value);
@@ -278,7 +279,7 @@ public class StargateEventListener implements Listener {
     @EventHandler
     public void onStargateTeleportEvent(StargateTeleportPortalEvent event) {
         if (event.getPortal() instanceof RealPortal realPortal && realPortal.getBehavior() instanceof GenerateBehavior generateBehavior) {
-            generateBehavior.onEnter();
+            generateBehavior.onEnter(event);
         }
     }
 
