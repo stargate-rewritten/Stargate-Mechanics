@@ -1,6 +1,7 @@
 package org.sgrewritten.stargatemechanics.listener;
 
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -16,6 +17,7 @@ import org.sgrewritten.stargate.api.StargateAPI;
 import org.sgrewritten.stargate.api.gate.GateAPI;
 import org.sgrewritten.stargate.api.gate.GateStructureType;
 import org.sgrewritten.stargate.api.network.portal.flag.PortalFlag;
+import org.sgrewritten.stargate.network.portal.formatting.LineColorFormatter;
 import org.sgrewritten.stargatemechanics.StargateMechanics;
 import org.sgrewritten.stargatemechanics.signcoloring.ColoringOverrideRegistry;
 
@@ -120,6 +122,7 @@ public class PlayerEventListener implements Listener {
 
         // Tell Stargate the block belongs to Stargate, so that it can use the default behaviors
         PortalPosition portalPositionToRegister = new PortalPosition(PositionType.SIGN, closestRelativeLocation,"Stargate");
+        portalPositionToRegister.setAttachment(new LineColorFormatter(DyeColor.BLACK, Material.OAK_WALL_SIGN));
         StargateMechanics.log(Level.INFO, "Adding portal position of type" + portalPositionToRegister.getPositionType());
         stargateAPI.getRegistry().registerPortalPosition(portalPositionToRegister,closestLocation,portal);
         BlockState state = closestLocation.getBlock().getState();
