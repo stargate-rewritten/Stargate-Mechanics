@@ -79,6 +79,11 @@ public class NetworkMock implements Network {
     }
 
     @Override
+    public boolean canSeePortal(Portal portal, Portal portal1, Player player) {
+        return true;
+    }
+
+    @Override
     public HighlightingStyle getHighlightingStyle() {
         return null;
     }

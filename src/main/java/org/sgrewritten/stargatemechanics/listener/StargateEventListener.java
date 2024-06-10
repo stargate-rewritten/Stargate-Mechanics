@@ -242,7 +242,9 @@ public class StargateEventListener implements Listener {
         for (SignLine line : event.getLines()) {
             ColorOverrideFormatter.formatFromOverride(colorOverride, line);
             if (line.getType() == SignLineType.NETWORK && portal.hasFlag(PortalFlag.HIDE_NETWORK)) {
-                line.getComponents().clear();
+                if(!line.getComponents().isEmpty()) {
+                    line.getComponents().clear();
+                }
             }
         }
     }
@@ -253,7 +255,7 @@ public class StargateEventListener implements Listener {
             event.setDeny(false);
             return;
         }
-        if (event.getPortal().hasFlag(PortalFlag.HIDDEN) && !playerCanSeeHiddenPortal(event.getListedPortal(), (Player) event.getEntity())) {
+        if (event.getListedPortal().hasFlag(PortalFlag.HIDDEN) && !playerCanSeeHiddenPortal(event.getListedPortal(), (Player) event.getEntity())) {
             event.setDeny(true);
         }
     }
