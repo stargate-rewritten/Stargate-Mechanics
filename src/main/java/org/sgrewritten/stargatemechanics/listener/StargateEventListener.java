@@ -180,7 +180,8 @@ public class StargateEventListener implements Listener {
             CoordinateParser.getLocationFromExpression(value, portal);
             insertMetaDataFromFlagArgument(portal, MetaData.DESTINATION_COORDS, value);
         } catch (ParseException e) {
-            MessageSender.sendMessage(entity, mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INVALID_ARGUMENT));
+            String message = mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INVALID_ARGUMENT);
+            MessageSender.sendMessage(entity, LocalizedMessageFormatter.insertFlags(message, List.of(flag)));
             MessageSender.sendMessage(entity, e.getMessage());
             return false;
         }
@@ -199,7 +200,8 @@ public class StargateEventListener implements Listener {
                 throw new UnsupportedOperationException();
             }
         } catch (ParseException | IllegalStateException e) {
-            MessageSender.sendMessage(entity, mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INVALID_ARGUMENT));
+            String message = mechanicsLanguageManager.getLocalizedMsg(LocalizedMessageType.FLAG_REMOVED_INVALID_ARGUMENT);
+            MessageSender.sendMessage(entity, LocalizedMessageFormatter.insertFlags(message, List.of(flag)));
             portal.removeFlag(flag);
         }
     }
