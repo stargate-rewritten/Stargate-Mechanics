@@ -1,0 +1,19 @@
+name: StargateMechanics
+main: org.sgrewritten.stargatemechanics.StargateMechanics
+version: ${project.version}
+description: Mechanics addon for the Stargate plugin for Bukkit
+author: EpicKnarvik97, Thorinwasher
+depend: [ Stargate ]
+api-version: 1.20.6
+commands:
+  stargatemechanics:
+    aliases:
+      - sgm
+      - sgmechanics
+    description: The root command for stargate mechanics
+    usage: |
+      /<command>
+permissions:
+  stargate.mechanics.info:
+    description: Allows the use of /sgm info
+    default: op
