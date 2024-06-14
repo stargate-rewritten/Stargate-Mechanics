@@ -1,3 +1,5 @@
+import java.nio.charset.Charset
+
 plugins {
     id("java")
     id("io.github.goooler.shadow") version "8.1.7"
@@ -32,7 +34,9 @@ tasks {
     }
 
     processResources {
-        filesMatching("**/plugin.yml") { expand(project.properties) }
+        filesMatching("**/plugin.yml") {
+            expand(project.properties)
+        }
     }
 
     jar {
@@ -43,7 +47,7 @@ tasks {
     }
 
     shadowJar {
-        dependencies{
+        dependencies {
             include(dependency("net.wesjd:anvilgui:1.9.4-SNAPSHOT"))
         }
         relocate("net.wesjd.anvilgui", project.group.toString() + "." + project.name + ".anvilgui")
@@ -52,5 +56,9 @@ tasks {
 
     test {
         useJUnitPlatform()
+    }
+
+    register("install") {
+        dependsOn("build", "shadowJar")
     }
 }
