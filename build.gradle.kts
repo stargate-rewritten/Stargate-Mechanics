@@ -50,6 +50,7 @@ tasks {
         dependencies {
             include(dependency("net.wesjd:anvilgui"))
         }
+        System.out.println("ping")
         relocate("net.wesjd.anvilgui", project.group.toString() + "." + project.name + ".anvilgui")
         archiveClassifier.set("")
     }
