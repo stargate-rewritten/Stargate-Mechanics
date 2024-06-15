@@ -1,10 +1,12 @@
+import java.io.ByteArrayOutputStream
+
 plugins {
     id("java")
     id("io.github.goooler.shadow") version "8.1.7"
 }
 
 group = "org.sgrewritten"
-version = "0.1.1-ALPHA"
+version = "0.1.1-ALPHA-" + runCommand("git", "rev-parse", "HEAD")
 
 repositories {
     mavenCentral()
@@ -59,4 +61,13 @@ tasks {
     register("install") {
         dependsOn("build", "shadowJar")
     }
+}
+
+fun runCommand(vararg cmd: String): String {
+    val stdout = ByteArrayOutputStream()
+    exec {
+        commandLine(*cmd)
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
 }
