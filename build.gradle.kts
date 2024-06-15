@@ -1,5 +1,3 @@
-import java.nio.charset.Charset
-
 plugins {
     id("java")
     id("io.github.goooler.shadow") version "8.1.7"
@@ -46,12 +44,17 @@ tasks {
         archiveBaseName = "StargateMechanics"
     }
 
+    build {
+        System.out.println("Ping 1")
+    }
+
     shadowJar {
-        // dependencies {
-        //     include(dependency("net.wesjd:anvilgui"))
-        // }
-        // relocate("net.wesjd.anvilgui", project.group.toString() + "." + project.name + ".anvilgui")
+        dependencies {
+            include(dependency("net.wesjd:anvilgui"))
+        }
+        relocate("net.wesjd.anvilgui", project.group.toString() + "." + project.name + ".anvilgui")
         archiveClassifier.set("")
+        System.out.println("Ping 2")
     }
 
     test {
