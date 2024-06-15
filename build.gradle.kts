@@ -47,9 +47,9 @@ tasks {
     }
 
     shadowJar {
-        dependencies {
-            include(dependency("net.wesjd:anvilgui"))
-        }
+        // dependencies {
+        //     include(dependency("net.wesjd:anvilgui"))
+        // }
         // relocate("net.wesjd.anvilgui", project.group.toString() + "." + project.name + ".anvilgui")
         archiveClassifier.set("")
     }
