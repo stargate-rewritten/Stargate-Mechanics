@@ -12,9 +12,7 @@ import java.util.List;
 public class ColorOverrideFormatter {
 
     private static void changeColorOfComponent(Holder<StargateComponent> component, ChatColor color) {
-        if (component.value instanceof LegacyStargateComponent legacy) {
-            component.value = new LegacyStargateComponent(color + ChatColor.stripColor(legacy.getText()));
-        }
+        component.value = new LegacyStargateComponent(color + component.value.plainText());
     }
 
     public static void formatFromOverride(@Nullable ColorOverride colorOverride, SignLine line) {
