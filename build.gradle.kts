@@ -23,7 +23,7 @@ dependencies {
     testImplementation("org.eclipse.parsson:parsson:1.1.6")
     implementation("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     implementation("org.jetbrains:annotations:24.1.0")
-    implementation("org.sgrewritten:stargate:1.0.0.16-NIGHTLY-3")
+    implementation("org.sgrewritten:stargate:1.0.0.16-NIGHTLY")
     implementation("net.wesjd:anvilgui:1.9.4-SNAPSHOT")
 }
 
