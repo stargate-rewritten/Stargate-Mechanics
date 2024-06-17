@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.sgrewritten"
-version = "0.1.1-ALPHA-" + runCommand("git", "rev-parse", "HEAD")
+version = "0.1.1-ALPHA"
 
 repositories {
     mavenCentral()
@@ -52,6 +52,7 @@ tasks {
         relocate("net.wesjd.anvilgui", project.group.toString() + "." + project.name + ".anvilgui")
         archiveClassifier.set("")
         archiveBaseName = "StargateMechanics"
+        archiveClassifier = runCommand("git", "rev-parse", "HEAD").subSequence(0,7).toString()
     }
 
     test {
