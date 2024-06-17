@@ -34,8 +34,8 @@ jobs:
             apt-get install -y maven
             apt install -y jq
             apt install -y wget
+            apt install -y default-jdk
             apt install -y curl
-            apt install -y gradle
 
       - run:
           name: Clone Repository
