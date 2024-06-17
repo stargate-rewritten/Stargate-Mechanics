@@ -66,23 +66,23 @@ jobs:
             wget "$core_url" -O ~/my-projects/stargate/mechanics/Stargate-Mechanics/Stargate-"$core_version"-PIPELINE.jar
             cd ~/my-projects/stargate/mechanics/Stargate-Mechanics
             mvn org.apache.maven.plugins:maven-install-plugin:3.1.2:install-file -Dfile=Stargate-"$core_version"-PIPELINE.jar
-            gradlew install
+            bash gradlew install
 
       - save_cache:
           key: maven-data
           paths:
-            - ~/my-projects/stargate/mechanics/Stargate-Mechanics/target
+            - ~/my-projects/stargate/mechanics/Stargate-Mechanics/build
 
       - run:
           name: Move valid files
           command: |
-            cd ~/my-projects/stargate/mechanics/Stargate-Mechanics/target
-            mkdir ~/my-projects/stargate/mechanics/Stargate-Mechanics/target/export
-            cd ~/my-projects/stargate/mechanics/Stargate-Mechanics/target
+            cd ~/my-projects/stargate/mechanics/Stargate-Mechanics/build/libs
+            mkdir ~/my-projects/stargate/mechanics/Stargate-Mechanics/build/libs/export
+            cd ~/my-projects/stargate/mechanics/Stargate-Mechanics/build/libs
             mv StargateMechanics-*.jar export
 
       - store_artifacts:
-          path: ~/my-projects/stargate/mechanics/Stargate-Mechanics/target/export
+          path: ~/my-projects/stargate/mechanics/Stargate-Mechanics/build/libs/export
           destination: build
 
 workflows:
