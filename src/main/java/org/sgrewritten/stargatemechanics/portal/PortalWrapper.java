@@ -257,8 +257,10 @@ public class PortalWrapper implements RealPortal {
 
     @Override
     public boolean hasFlag(PortalFlag portalFlag) {
-        setPortalIfNotPresent();
-        return this.portal.hasFlag(portalFlag);
+        if(this.hasGeneratedPortal()){
+            return this.hasFlag(portalFlag);
+        }
+        return false;
     }
 
     @Override

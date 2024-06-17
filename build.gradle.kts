@@ -43,7 +43,6 @@ tasks {
         manifest {
             attributes["paperweight-mappings-namespace"] = "spigot"
         }
-        archiveBaseName = "StargateMechanics"
     }
 
     shadowJar {
@@ -52,6 +51,7 @@ tasks {
         }
         relocate("net.wesjd.anvilgui", project.group.toString() + "." + project.name + ".anvilgui")
         archiveClassifier.set("")
+        archiveBaseName = "StargateMechanics"
     }
 
     test {
@@ -59,7 +59,7 @@ tasks {
     }
 
     register("install") {
-        dependsOn("build", "shadowJar")
+        dependsOn("shadowJar")
     }
 }
 
