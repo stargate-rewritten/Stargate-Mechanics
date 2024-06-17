@@ -2,13 +2,9 @@ version: 2.1
 jobs:
   build-and-test:
     docker:
-      - image: debian:12.4
+      #- image: debian:12.4
 
-      - image: cimg/mariadb:11.2.1
-        environment:
-          MARIADB_ROOT_PASSWORD: password
-          MARIADB_DATABASE: Stargate
-          MARIADB_PASSWORD: password
+      - image: maven:3.9.7-amazoncorretto-21-debian-bookworm
 
     environment:
       TEST_REPORTS: /tmp/test-reports
@@ -29,7 +25,7 @@ jobs:
           name: Install Stuff
           command: |
             cd ~/my-projects/stargate/mechanics
-            apt-get update && apt-get install -y mariadb-client
+            apt-get update
             apt-get install -y git
             apt-get install -y maven
             apt install -y jq
@@ -48,14 +44,6 @@ jobs:
       - restore_cache:
           keys:
             - maven-data
-
-      - run:
-          name: Populate Secrets File
-          command: |
-            cd ~/my-projects/stargate/mechanics
-            touch ~/my-projects/stargate/mechanics/Stargate-Mechanics/src/test/resources/mysql_credentials.secret
-            echo MYSQL_DB_PASSWORD=password >> ~/my-projects/stargate/mechanics/Stargate-Mechanics/src/test/resources/mysql_credentials.secret
-            echo MYSQL_DB_USER=root >> ~/my-projects/stargate/mechanics/Stargate-Mechanics/src/test/resources/mysql_credentials.secret
 
       - run:
           name: Attempt to Build
