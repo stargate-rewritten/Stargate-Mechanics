@@ -8,3 +8,4 @@ stargatemechanics.iml
 /dependency-reduced-pom.xml
 build/
 .gradle/
+nbactions.xml
