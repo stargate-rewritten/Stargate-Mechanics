@@ -27,10 +27,8 @@ jobs:
             cd ~/my-projects/stargate/mechanics
             apt-get update
             apt-get install -y git
-            apt-get install -y maven
             apt install -y jq
             apt install -y wget
-            apt install -y default-jdk
             apt install -y curl
 
       - run:
